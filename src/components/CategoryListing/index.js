@@ -13,7 +13,7 @@ import { randomColor } from '../../helper'
 
 let color = {}
 
-function CategoryListing({
+export function CategoryListing({
   data,
   onPress,
   images
@@ -43,5 +43,3 @@ function CategoryListing({
     </ScrollView>
   )
 }
-
-export default CategoryListing
