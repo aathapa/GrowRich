@@ -5,18 +5,18 @@ import {
   Animated,
   Dimensions,
   TouchableOpacity,
-  TextInput
 } from 'react-native'
 import { Navigation } from 'react-native-navigation'
 import LinearGradient from 'react-native-linear-gradient';
-import { Button } from 'react-native-elements'
+import { Button, Input } from 'react-native-elements'
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons'
 import { openDatabase } from 'react-native-sqlite-storage'
 import uuid from 'uuid/v4'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 import TopBar from 'component/Topbar'
-import CategoryListing from 'component/CategoryListing'
+import { CategoryListing, Form } from 'component'
 
 import { formatDate } from 'helper'
 
@@ -134,48 +134,76 @@ class AddTransactionContainer extends Component {
           />
         </Animated.View>
 
-        <View style={{ marginHorizontal: 15, marginTop: 15 }}>
-          <TouchableOpacity onPress={() => this.categoryHeightValue.setValue(0)}>
-            <AddTransactionForm
+        <KeyboardAwareScrollView>
+          <View style={{ marginHorizontal: 15, marginTop: 15 }}>
+            <View style={{ borderBottomWidth: 0.7, borderBottomColor: '#5B3BB4' }}>
+              <View>
+                <Text style={{ color: '#757575' }}>Category</Text>
+              </View>
+              <View style={{ paddingTop: 10, height: 40 }}>
+                <TouchableOpacity onPress={() => this.categoryHeightValue.setValue(0)}>
+                  <View style={{ flexDirection: 'row' }}>
+                    <View style={{ flex: 1 }}>
+                      <SimpleLineIcons name="grid" size={20} color="#616161" />
+                    </View>
+                    <View style={{ flex: 10 }}>
+                      <Text style={{ fontSize: 17, color: '#424242' }}>{this.state.selectedCategoryItem}</Text>
+                    </View>
+
+                  </View>
+                </TouchableOpacity>
+              </View>
+
+            </View>
+            <View style={{ borderBottomWidth: 0.7, borderBottomColor: '#5B3BB4', paddingTop: 20 }}>
+              <View>
+                <Text style={{ color: '#757575' }}>Date</Text>
+              </View>
+              <View style={{ paddingTop: 10, height: 40 }}>
+                <TouchableOpacity onPress={() => this.setState({ isDateTimePickerVisible: true })}>
+                  <View style={{ flexDirection: 'row' }}>
+                    <View style={{ flex: 1 }}>
+                      <SimpleLineIcons name="calendar" size={20} color="#616161" />
+                    </View>
+                    <View style={{ flex: 10 }}>
+                      <Text style={{ fontSize: 17, color: '#424242' }}>{this.state.currentDate}</Text>
+                    </View>
+
+                  </View>
+                </TouchableOpacity>
+              </View>
+
+            </View>
+
+            <Form
               iconName="grid"
-              value={this.state.selectedCategoryItem}
-              editable={false}
-
+              label="Amount"
+              placeholder="Amount"
+              value={this.state.amount}
+              onChangeText={(amount) => this.setState({ amount })}
+              keyboardType="numeric"
             />
-          </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => this.setState({ isDateTimePickerVisible: true })}>
-            <AddTransactionForm
-              iconName="calendar"
-              value={this.state.currentDate}
-              editable={false}
+            <Form
+              iconName="notebook"
+              label="Memo"
+              placeholder="Memo"
+              value={this.state.memo}
+              onChangeText={(memo) => this.setState({ memo })}
             />
-          </TouchableOpacity>
 
-          <AddTransactionForm
-            iconName="grid"
-            placeholder="Amount"
-            value={this.state.amount}
-            onChangeText={(amount) => this.setState({ amount })}
-            keyboardType="numeric"
-          />
+            <View style={{ marginTop: 20 }}>
+              <Button
+                title="Add"
+                backgroundColor="#9DD377"
+                onPress={() => this.insertData()}
+              />
+            </View>
+          </View>
+        </KeyboardAwareScrollView>
 
-          <AddTransactionForm
-            iconName="notebook"
-            placeholder="Memo"
-            value={this.state.memo}
-            onChangeText={(memo) => this.setState({ memo })}
-          />
-
-
-        </View>
-        <View style={{ marginTop: 20 }}>
-          <Button
-            title="Add"
-            backgroundColor="#9DD377"
-            onPress={() => this.insertData()}
-          />
-        </View>
+        
+        
 
         <MenuItem
           open={this.state.open}
@@ -185,7 +213,7 @@ class AddTransactionContainer extends Component {
 
         <DateTimePicker
           isVisible={this.state.isDateTimePickerVisible}
-          onConfirm={(date) => this.setState({ isDateTimePickerVisible: false, currentDate: formatDate(date.getFullYear(), date.getMonth()+1, date.getDate()) })
+          onConfirm={(date) => this.setState({ isDateTimePickerVisible: false, currentDate: formatDate(date.getFullYear(), date.getMonth() + 1, date.getDate()) })
           }
           onCancel={() => this.setState({ isDateTimePickerVisible: false })}
         />
@@ -194,34 +222,6 @@ class AddTransactionContainer extends Component {
   }
 
 }
-
-class AddTransactionForm extends Component {
-  render() {
-    const { placeholder, value, onChangeText, editable, keyboardType, iconName } = this.props
-    return (
-      <View
-        style={{ flexDirection: 'row', backgroundColor: '#8B4FCB', height: 50, marginTop: 15 }}>
-        <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-          <SimpleLineIcons name={iconName} color="#fff" size={15} />
-        </View>
-        <View style={{ flex: 8, justifyContent: 'center', backgroundColor: '#5B3BB4', paddingLeft: 15 }}>
-          <TextInput
-            style={{ color: '#fff', fontSize: 20 }}
-            placeholder={placeholder}
-            placeholderTextColor="#fff"
-            value={value}
-            onChangeText={onChangeText}
-            editable={editable}
-            keyboardType={keyboardType}
-          />
-        </View>
-
-      </View>
-    )
-  }
-
-}
-
 
 function MenuItem({
   open,
