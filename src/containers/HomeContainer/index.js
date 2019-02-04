@@ -31,90 +31,6 @@ const db = openDatabase({ name: 'Expense.db' })
 const LineargradientAnimation = new Animated.createAnimatedComponent(Linergradient)
 const AnimatedFlatList = new Animated.createAnimatedComponent(FlatList)
 
-function ModalView({
-  isVisible,
-  onBackdropPress,
-  data
-}) {
-  console.log(data)
-  const { category, memo, amount, transaction_type, color, transaction_date } = data
-  return (
-    <Modal
-      isVisible={isVisible}
-      animationInTiming={50}
-      onBackdropPress={onBackdropPress}
-      backdropOpacity={0.8}
-    >
-      <View style={{
-        backgroundColor: "white",
-        borderRadius: 4,
-        height: 250,
-        padding: 20
-      }}>
-        <View style={{ height: 30, flexDirection: 'row', height: 50, alignItems: 'center', }}>
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <View style={{ backgroundColor: color, height: 32, width: 32, borderRadius: 16, justifyContent: 'center', alignItems: 'center' }}>
-              <Image
-                source={Images[category]}
-                style={{ width: 20, height: 20 }}
-              />
-            </View>
-          </View>
-          <View style={{ flex: 5 }}>
-            <Text style={{ fontSize: 17 }}>{category}</Text>
-          </View>
-          <View style={{flex: 2, flexDirection: 'row', justifyContent: 'space-around',}}>
-            <TouchableOpacity>
-              <AntDesign name="edit" size={20} color="#212121" />
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <AntDesign name="delete" size={20} color="#212121" />
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={{height: 0.7, backgroundColor: '#000'}} />
-        <View style={{ height: 150, paddingTop: 20 }}>
-          <View style={{ flexDirection: 'row', height: 30 }}>
-            <View style={{flex: 1}}>
-              <Text style={{ fontSize: 15, color: '#616161'}}>Category</Text>
-            </View>
-            <View style={{flex: 2}}>
-              <Text style={{ fontSize: 16 }}>{transaction_type}</Text>
-            </View>
-          </View>
-          <View style={{ flexDirection: 'row', height: 30  }}>
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 15, color: '#616161' }}>Amount</Text>
-            </View>
-            <View style={{ flex: 2 }}>
-              <Text>{amount}</Text>
-            </View>
-          </View>
-          <View style={{ flexDirection: 'row', height: 30  }}>
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 15, color: '#616161' }}>Memo</Text>
-            </View>
-            <View style={{ flex: 2 }}>
-              <Text>{memo}</Text>
-            </View>
-          </View>
-          <View style={{ flexDirection: 'row' }}>
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 15, color: '#616161' }}>Date</Text>
-            </View>
-            <View style={{ flex: 2 }}>
-              <Text>{transaction_date}</Text>
-            </View>
-          </View>
-          
-          
-        </View>
-      </View>
-      
-    </Modal>
-  )
-}
-
 class HomeContainer extends Component {
 
   state = {
@@ -160,6 +76,21 @@ class HomeContainer extends Component {
         }
       )
     })
+  }
+
+  onDeletePressed() {
+    db.transaction(txn => {
+      txn.executeSql(`
+        DELETE FROM Transactions
+        WHERE id = ?
+      `, [this.state.selectedTransactionData.id],
+        (tx, res) => {
+          console.log(res)
+        }
+      )
+    })
+    this.fetchData()
+    this.setState({ isTransactionItemModalVisible: false })
   }
 
   render() {
@@ -355,6 +286,7 @@ class HomeContainer extends Component {
           isVisible={this.state.isTransactionItemModalVisible}
           onBackdropPress={() => this.setState({ isTransactionItemModalVisible: false })}
           data={this.state.selectedTransactionData}
+          onDeletePressed={()=> this.onDeletePressed()}
         >
 
         </ModalView>
@@ -362,6 +294,103 @@ class HomeContainer extends Component {
       </View>
     );
   }
+}
+
+function ModalView({
+  isVisible,
+  onBackdropPress,
+  data,
+  onDeletePressed,
+  onEditPressed
+}) {
+  const {
+    category,
+    memo,
+    amount,
+    transaction_type,
+    color,
+    transaction_date,
+  } = data
+  console.log(data)
+  return (
+    <Modal
+      isVisible={isVisible}
+      animationInTiming={50}
+      onBackdropPress={onBackdropPress}
+      backdropOpacity={0.8}
+    >
+      <View style={{
+        backgroundColor: "white",
+        borderRadius: 4,
+        height: 250,
+        padding: 20
+      }}>
+        <View style={{ height: 30, flexDirection: 'row', height: 50, alignItems: 'center', }}>
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <View style={{ backgroundColor: color, height: 32, width: 32, borderRadius: 16, justifyContent: 'center', alignItems: 'center' }}>
+              <Image
+                source={Images[category]}
+                style={{ width: 20, height: 20 }}
+              />
+            </View>
+          </View>
+          <View style={{ flex: 5 }}>
+            <Text style={{ fontSize: 17 }}>{category}</Text>
+          </View>
+          <View style={{ flex: 2, flexDirection: 'row', justifyContent: 'space-around', }}>
+            <TouchableOpacity
+              onPress={onEditPressed}
+            >
+              <AntDesign name="edit" size={20} color="#212121" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={onDeletePressed}
+            >
+              <AntDesign name="delete" size={20} color="#212121" />
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={{ height: 0.7, backgroundColor: '#000' }} />
+        <View style={{ height: 150, paddingTop: 20 }}>
+          <View style={{ flexDirection: 'row', height: 30 }}>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 15, color: '#616161' }}>Category</Text>
+            </View>
+            <View style={{ flex: 2 }}>
+              <Text style={{ fontSize: 16 }}>{transaction_type}</Text>
+            </View>
+          </View>
+          <View style={{ flexDirection: 'row', height: 30 }}>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 15, color: '#616161' }}>Amount</Text>
+            </View>
+            <View style={{ flex: 2 }}>
+              <Text>{amount}</Text>
+            </View>
+          </View>
+          <View style={{ flexDirection: 'row', height: 30 }}>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 15, color: '#616161' }}>Memo</Text>
+            </View>
+            <View style={{ flex: 2 }}>
+              <Text>{memo}</Text>
+            </View>
+          </View>
+          <View style={{ flexDirection: 'row' }}>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 15, color: '#616161' }}>Date</Text>
+            </View>
+            <View style={{ flex: 2 }}>
+              <Text>{transaction_date}</Text>
+            </View>
+          </View>
+
+
+        </View>
+      </View>
+
+    </Modal>
+  )
 }
 
 export default HomeContainer
