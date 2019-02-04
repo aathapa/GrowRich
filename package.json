@@ -9,7 +9,8 @@
   "dependencies": {
     "react": "16.6.3",
     "react-native": "0.57.8",
-    "react-native-elements": "^0.19.1",
+    "react-native-elements": "^1.0.0",
+    "react-native-keyboard-aware-scroll-view": "^0.8.0",
     "react-native-linear-gradient": "^2.5.3",
     "react-native-modal": "^7.0.2",
     "react-native-modal-datetime-picker": "^6.0.0",
