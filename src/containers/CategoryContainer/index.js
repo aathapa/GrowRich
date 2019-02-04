@@ -131,7 +131,7 @@ class CategoryContainer extends Component {
           style={{ position: 'absolute', top: 0, left: 0, right: 0, opacity, marginTop: 50, zIndex: 0 }}
         >
           {
-            this.state.categoryWiseData.length > 0 ? <View>
+            eachCategoryData.length > 0 ? <View>
               <View>
                 <Text>Chart</Text>
               </View>
