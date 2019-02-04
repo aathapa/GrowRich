@@ -6,12 +6,12 @@ export const Icons = {
       ios: {
         filter: 'ios-funnel',
         arrowBack: 'ios-arrow-back',
-        arrowForward: 'ios-arrow-forward'
+        arrowForward: 'ios-arrow-forward',
       },
       android: {
         filter: 'md-funnel',
         arrowBack: 'md-arrow-back',
-        arrowForward: 'md-arrow-forward'
+        arrowForward: 'md-arrow-forward',
       }
     })
   },
