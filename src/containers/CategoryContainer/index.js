@@ -13,6 +13,7 @@ import {
 import { Navigation } from 'react-native-navigation'
 import LinearGradient from 'react-native-linear-gradient'
 import Feather from 'react-native-vector-icons/Feather'
+import { VictoryChart, VictoryLine, VictoryAxis } from 'victory-native'
 
 import { openDatabase } from 'react-native-sqlite-storage'
 import { Images } from 'globalData'
@@ -28,7 +29,9 @@ let color = {}
 class CategoryContainer extends Component {
 
   state = {
-    categoryData: []
+    categoryData: [],
+    selectedCategory: '',
+    eachCategoryData: []
   }
 
   animationValue = new Animated.Value(0)
@@ -45,12 +48,34 @@ class CategoryContainer extends Component {
     this.animationValue.setValue(0)
   }
 
-  onCategoryItemClick() {
+  fetchEachCategoryData() {
+    let eachCategoryData = []
+    db.transaction(txn => {
+      txn.executeSql(`
+          SELECT amount AS y FROM Transactions
+          WHERE category = ?
+        `, [this.state.selectedCategory],
+        (tx, { rows }) => {
+          for (let i = 0; i < rows.length; i++) {
+            eachCategoryData.push(rows.item(i))
+          }
+          this.setState({ eachCategoryData })
+        }
+      )
+    })
+  }
+
+  onCategoryItemClick(name, id) {
     Animated.timing(this.animationValue, {
       toValue: 1,
       duration: 200,
       useNativeDriver: true
     }).start()
+
+    this.setState({ selectedCategory: name }, () => {
+      this.fetchEachCategoryData()
+    })
+
   }
 
   renderItems({ name, id }) {
@@ -58,7 +83,7 @@ class CategoryContainer extends Component {
     color[id] = exactColor
     return (
       <TouchableOpacity
-        onPress={() => this.onCategoryItemClick()}
+        onPress={() => this.onCategoryItemClick(name, id)}
       >
         <View style={{ flex: 1, flexDirection: 'row', height: 50, alignItems: 'center', marginHorizontal: 15 }}>
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -89,15 +114,45 @@ class CategoryContainer extends Component {
   }
 
   render() {
+    const { eachCategoryData } = this.state
 
     const translateX = this.animationValue.interpolate({
       inputRange: [0, 1],
       outputRange: [0, -width]
     })
+
+    const opacity = this.animationValue.interpolate({
+      inputRange: [0, 0.5, 1],
+      outputRange: [0, 0, 1]
+    })
     return (
       <View style={{}}>
         <Animated.View
-          style={{ transform: [{ translateX }]}}
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, opacity, marginTop: 50, zIndex: 0 }}
+        >
+          {
+            this.state.categoryWiseData.length > 0 ? <View>
+              <View>
+                <Text>Chart</Text>
+              </View>
+              <Animated.View style={{}}>
+                <VictoryChart minDomain={{ y: 0 }}>
+                  <VictoryAxis dependentAxis />
+                  <VictoryLine
+                    style={{
+                      data: { stroke: "#c43a31" },
+                    }}
+                    interpolation="natural"
+                    data={this.state.categoryWiseData}
+                  />
+                </VictoryChart>
+              </Animated.View>
+            </View> : <Text>Please Add Transactions </Text>
+          }
+        </Animated.View>
+
+        <Animated.View
+          style={{ transform: [{ translateX }] }}
         >
           <LinearGradient
             style={{ height: 150, justifyContent: 'center', }}
@@ -136,8 +191,9 @@ class CategoryContainer extends Component {
             />
           </View>
         </Animated.View>
-        
+
       </View>
+
     )
   }
 }
