@@ -5,19 +5,21 @@ import {
   FlatList,
   Animated,
   TouchableOpacity,
-  Dimensions
+  Dimensions,
+  Image
 } from 'react-native';
 import Linergradient from 'react-native-linear-gradient'
 import { Navigation } from 'react-native-navigation'
 import { openDatabase } from 'react-native-sqlite-storage'
 import IonIcons from 'react-native-vector-icons/Ionicons'
+import AntDesign from 'react-native-vector-icons/AntDesign'
 import Modal from 'react-native-modal';
 
 import Info from 'component/Info'
 import Card from 'component/Card'
 
 import { Images, Icons } from 'globalData'
-import { month, firstMonthDay, lastMonthDay } from 'helper'
+import { month } from 'helper'
 import { fetchAllTransaction } from '../../database/transactions.model'
 import styles from './style'
 
@@ -29,6 +31,90 @@ const db = openDatabase({ name: 'Expense.db' })
 const LineargradientAnimation = new Animated.createAnimatedComponent(Linergradient)
 const AnimatedFlatList = new Animated.createAnimatedComponent(FlatList)
 
+function ModalView({
+  isVisible,
+  onBackdropPress,
+  data
+}) {
+  console.log(data)
+  const { category, memo, amount, transaction_type, color, transaction_date } = data
+  return (
+    <Modal
+      isVisible={isVisible}
+      animationInTiming={50}
+      onBackdropPress={onBackdropPress}
+      backdropOpacity={0.8}
+    >
+      <View style={{
+        backgroundColor: "white",
+        borderRadius: 4,
+        height: 250,
+        padding: 20
+      }}>
+        <View style={{ height: 30, flexDirection: 'row', height: 50, alignItems: 'center', }}>
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <View style={{ backgroundColor: color, height: 32, width: 32, borderRadius: 16, justifyContent: 'center', alignItems: 'center' }}>
+              <Image
+                source={Images[category]}
+                style={{ width: 20, height: 20 }}
+              />
+            </View>
+          </View>
+          <View style={{ flex: 5 }}>
+            <Text style={{ fontSize: 17 }}>{category}</Text>
+          </View>
+          <View style={{flex: 2, flexDirection: 'row', justifyContent: 'space-around',}}>
+            <TouchableOpacity>
+              <AntDesign name="edit" size={20} color="#212121" />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <AntDesign name="delete" size={20} color="#212121" />
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={{height: 0.7, backgroundColor: '#000'}} />
+        <View style={{ height: 150, paddingTop: 20 }}>
+          <View style={{ flexDirection: 'row', height: 30 }}>
+            <View style={{flex: 1}}>
+              <Text style={{ fontSize: 15, color: '#616161'}}>Category</Text>
+            </View>
+            <View style={{flex: 2}}>
+              <Text style={{ fontSize: 16 }}>{transaction_type}</Text>
+            </View>
+          </View>
+          <View style={{ flexDirection: 'row', height: 30  }}>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 15, color: '#616161' }}>Amount</Text>
+            </View>
+            <View style={{ flex: 2 }}>
+              <Text>{amount}</Text>
+            </View>
+          </View>
+          <View style={{ flexDirection: 'row', height: 30  }}>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 15, color: '#616161' }}>Memo</Text>
+            </View>
+            <View style={{ flex: 2 }}>
+              <Text>{memo}</Text>
+            </View>
+          </View>
+          <View style={{ flexDirection: 'row' }}>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 15, color: '#616161' }}>Date</Text>
+            </View>
+            <View style={{ flex: 2 }}>
+              <Text>{transaction_date}</Text>
+            </View>
+          </View>
+          
+          
+        </View>
+      </View>
+      
+    </Modal>
+  )
+}
+
 class HomeContainer extends Component {
 
   state = {
@@ -37,7 +123,8 @@ class HomeContainer extends Component {
     isDateModalVisible: false,
     selectedTransactionType: null,
     currentYear: new Date().getFullYear(),
-    selectedMonth: null
+    selectedMonth: null,
+    isTransactionItemModalVisible: false
   }
   scrollY = new Animated.Value(0)
 
@@ -69,7 +156,7 @@ class HomeContainer extends Component {
           for (let i = 0; i < res.rows.length; i++) {
             data.push(res.rows.item(i))
           }
-          this.setState({transactionData: data})
+          this.setState({ transactionData: data })
         }
       )
     })
@@ -96,10 +183,9 @@ class HomeContainer extends Component {
 
     const isActive = (value) => this.state.selectedTransactionType === value
     const isMonthActive = (value) = this.state.selectedMonth
-    // console.log(this.state.transactionData)
-    
+
     return (
-      <View style={{height}}>
+      <View style={{ height }}>
         <LineargradientAnimation style={{
           height: 300,
           position: 'absolute',
@@ -163,7 +249,7 @@ class HomeContainer extends Component {
               memo={item.memo}
               color={item.color}
               image={Images}
-              onPress={() => alert(item)}
+              onPress={() => this.setState({ isTransactionItemModalVisible: true, selectedTransactionData: item })}
             />
             }
             keyExtractor={(item) => item.id}
@@ -264,6 +350,15 @@ class HomeContainer extends Component {
         >
           <IonIcons name={Icons.IonIcons.filter} size={25} color="#fff" />
         </TouchableOpacity>
+
+        <ModalView
+          isVisible={this.state.isTransactionItemModalVisible}
+          onBackdropPress={() => this.setState({ isTransactionItemModalVisible: false })}
+          data={this.state.selectedTransactionData}
+        >
+
+        </ModalView>
+
       </View>
     );
   }
