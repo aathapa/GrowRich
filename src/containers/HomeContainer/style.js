@@ -6,7 +6,7 @@ export default styles = {
   },
   modalMainView: {
     backgroundColor: '#fff',
-    height: 300,
+    height: 200,
     padding: 20
   },
   modalTransactionTypeView: {
