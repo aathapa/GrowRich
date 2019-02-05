@@ -30,4 +30,9 @@ export function insert(db, sql, vars = []) {
   })
 }
 
+export function remove(db, sql, vars) {
+  if (!sql && !db && !vars) return ('Invalid query or vars empty')
+  return exec(db, sql, vars)
+}
+
 

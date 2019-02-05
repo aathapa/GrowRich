@@ -2,7 +2,8 @@ export {
   fetchAllTransaction,
   createTransactionTable,
   insertDataInTransaction,
-  fetchGroupByData
+  fetchGroupByData,
+  deleteTransactionItem
 } from './transactions.model'
 
 export {

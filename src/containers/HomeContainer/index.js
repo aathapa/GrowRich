@@ -20,7 +20,7 @@ import Card from 'component/Card'
 
 import { Images, Icons } from 'globalData'
 import { month } from 'helper'
-import { fetchAllTransaction } from '../../database/transactions.model'
+import { fetchAllTransaction, deleteTransactionItem } from '../../database/transactions.model'
 import styles from './style'
 
 const { height } = Dimensions.get('window')
@@ -65,7 +65,7 @@ class HomeContainer extends Component {
     db.transaction(txn => {
       txn.executeSql(`
         SELECT * FROM Transactions
-        WHERE transaction_date BETWEEN "2019-2-1" AND "2019-2-31"
+        WHERE transaction_date BETWEEN "2019-1-1" AND "2019-2-31"
       `, [],
         (tx, res) => {
           console.log(res)
@@ -79,16 +79,8 @@ class HomeContainer extends Component {
   }
 
   onDeletePressed() {
-    db.transaction(txn => {
-      txn.executeSql(`
-        DELETE FROM Transactions
-        WHERE id = ?
-      `, [this.state.selectedTransactionData.id],
-        (tx, res) => {
-          console.log(res)
-        }
-      )
-    })
+    const { id } = this.state.selectedTransactionData
+    deleteTransactionItem(db, vars= [id])
     this.fetchData()
     this.setState({ isTransactionItemModalVisible: false })
   }
@@ -111,8 +103,6 @@ class HomeContainer extends Component {
       inputRange: [0, 50, 100],
       outputRange: [1, 0.4, 0],
     })
-
-    const isActive = (value) => this.state.selectedTransactionType === value
     const isMonthActive = (value) = this.state.selectedMonth
 
     return (
@@ -202,32 +192,6 @@ class HomeContainer extends Component {
           backdropOpacity={0.8}
         >
           <View style={styles.modalMainView}>
-            <View style={{ height: 100 }}>
-              <View>
-                <Text style={{ fontSize: 18 }}>Transaction Type</Text>
-              </View>
-              <View style={{ height: 2, backgroundColor: '#000' }} />
-              <View style={{ flexDirection: 'row', paddingTop: 10 }}>
-                <TouchableOpacity
-                  style={[styles.modalTransactionTypeView, isActive('Expense') ? styles.selectedmodalTransactionTypeView : null]}
-                  onPress={() => this.setState({ selectedTransactionType: 'Expense' })}
-                >
-                  <Text style={isActive('Expense') ? styles.selectedmodalTransactionTypeText : null}>Expense</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.modalTransactionTypeView, isActive('Income') ? styles.selectedmodalTransactionTypeView : null]}
-                  onPress={() => this.setState({ selectedTransactionType: 'Income' })}
-                >
-                  <Text style={isActive('Income') ? styles.selectedmodalTransactionTypeText : null}>Income</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.modalTransactionTypeView, isActive('Both') ? styles.selectedmodalTransactionTypeView : null]}
-                  onPress={() => this.setState({ selectedTransactionType: 'Both' })}
-                >
-                  <Text style={isActive('Both') ? styles.selectedmodalTransactionTypeText : null}>Both</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
             <View>
               <View>
                 <View style={{ flexDirection: 'row' }}>

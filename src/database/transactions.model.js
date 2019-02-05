@@ -45,3 +45,12 @@ export function fetchGroupByData(db, vars) {
     vars
   )
 }
+
+export function deleteTransactionItem(db, vars) {
+  remove(db, `
+    DELETE FROM Transactions
+    WHERE id = ?
+  `,
+    vars
+  )
+}
