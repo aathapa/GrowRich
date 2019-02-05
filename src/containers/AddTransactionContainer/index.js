@@ -67,12 +67,12 @@ class AddTransactionContainer extends Component {
 
   async insertData() {
     const { amount, memo, currentDate, currentActiveMenu, selectedCategoryItem } = this.state
-    const vars = [uuid(), currentActiveMenu, selectedCategoryItem, currentDate, amount, memo, colors[Math.floor(Math.random() * colors.length)]]
+    const vars = [uuid(), currentActiveMenu, selectedCategoryItem, currentDate, amount, memo, colors[Math.floor(Math.random() * colors.length)], Date.now()]
     try {
       await insertDataInTransaction(db, vars)
     }
     catch (e) {
-      console.log(e)
+      alert(e)
     }
     this.setState({ amount: '', memo: '' })
   }
@@ -202,8 +202,8 @@ class AddTransactionContainer extends Component {
           </View>
         </KeyboardAwareScrollView>
 
-        
-        
+
+
 
         <MenuItem
           open={this.state.open}

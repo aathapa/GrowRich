@@ -1,4 +1,4 @@
-import { exec, select, insert } from './db';
+import { exec, select, insert, remove } from './db';
 
 export function createTransactionTable(db) {
   return exec(db, `
@@ -9,22 +9,24 @@ export function createTransactionTable(db) {
       transaction_date TEXT,
       amount INTEGER,
       memo TEXT,
-      color TEXT
+      color TEXT,
+      position INTEGER
     )`);
 }
 
-export function fetchAllTransaction(db) {
+export function fetchAllTransaction(db, vars = []) {
   return select(db, `
    SELECT * FROM Transactions
-   ORDER BY transaction_date DESC
-  `, []);
+   ORDER BY position DESC
+  `, vars
+  );
 }
 
 export function insertDataInTransaction(db, vars) {
   return insert(db, `
     INSERT INTO Transactions 
-      (id, transaction_type, category, transaction_date, amount, memo, color)
-      VALUES(?,?,?,?,?,?,?)
+      (id, transaction_type, category, transaction_date, amount, memo, color, position)
+      VALUES(?,?,?,?,?,?,?,?)
     `,
     vars
   )
