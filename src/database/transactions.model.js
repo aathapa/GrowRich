@@ -36,7 +36,8 @@ export function fetchGroupByData(db, vars) {
   return select(db, `
     SELECT
       category x, 
-      sum(amount) y
+      sum(amount) y,
+      color c
       FROM Transactions
       WHERE transaction_type=?
       GROUP BY category
