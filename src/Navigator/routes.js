@@ -69,6 +69,10 @@ export function goToAuth() {
               component: {
                 name: ANALYTICS_SCREEN,
                 options: {
+                  topBar: {
+                    visible: false,
+                    drawBehind: true
+                  },
                   bottomTab: {
                     text: 'Analytics',
                     icon: chart
