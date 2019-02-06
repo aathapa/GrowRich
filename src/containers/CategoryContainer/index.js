@@ -144,7 +144,8 @@ class CategoryContainer extends Component {
                       data: { stroke: "#c43a31" },
                     }}
                     interpolation="natural"
-                    data={this.state.eachCategoryData}
+                    data={eachCategoryData.length === 1 ? [eachCategoryData[0], eachCategoryData[0]]: eachCategoryData}
+
                   />
                 </VictoryChart>
               </Animated.View>
