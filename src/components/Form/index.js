@@ -1,5 +1,5 @@
 import React from 'react'
-import {  
+import {
   View,
   Text,
   TextInput,
@@ -15,25 +15,23 @@ export function Form({ placeholder, value, onChangeText, editable, keyboardType,
         <Text style={{ color: '#757575' }}>{label}</Text>
       </View>
       <View style={{ paddingTop: 10, height: 40 }}>
-        <TouchableOpacity onPress={() => this.setState({ isDateTimePickerVisible: true })}>
-          <View style={{ flexDirection: 'row' }}>
-            <View style={{ flex: 1 }}>
-              <SimpleLineIcons name={iconName} size={20} color="#616161" />
-            </View>
-            <View style={{ flex: 10 }}>
-              <TextInput
-                style={{ color: '#424242', fontSize: 17 }}
-                placeholder={placeholder}
-                placeholderTextColor="#424242"
-                value={value}
-                onChangeText={onChangeText}
-                editable={editable}
-                keyboardType={keyboardType}
-              />
-            </View>
-
+        <View style={{ flexDirection: 'row' }}>
+          <View style={{ flex: 1 }}>
+            <SimpleLineIcons name={iconName} size={20} color="#616161" />
           </View>
-        </TouchableOpacity>
+          <View style={{ flex: 10 }}>
+            <TextInput
+              style={{ color: '#424242', fontSize: 17 }}
+              placeholder={placeholder}
+              placeholderTextColor="#424242"
+              value={value}
+              onChangeText={onChangeText}
+              editable={editable}
+              keyboardType={keyboardType}
+            />
+          </View>
+
+        </View>
       </View>
 
     </View>
