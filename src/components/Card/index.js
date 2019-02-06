@@ -6,7 +6,7 @@ import {
   Image
 } from 'react-native'
 
-import FontAwesome from 'react-native-vector-icons/FontAwesome'
+import { Colors } from '../../globalData/'
 
 function Card({
   category,
@@ -18,7 +18,7 @@ function Card({
   color,
   image
 }) {
-  const textColor = type.toUpperCase() === 'EXPENSE' ? '#EA114B' : '#00C7A0'
+  const textColor = type.toUpperCase() === 'EXPENSE' ? Colors.expenseColor : Colors.incomeColor
   const symbol = type.toUpperCase() === 'EXPENSE' ? '-' : '+'
   return (
     <TouchableOpacity onPress={onPress} style={{ paddingBottom: 15 }}>
@@ -46,11 +46,11 @@ function Card({
           </View>
         </View>
         <View style={{ flex: 2, justifyContent: 'center', }}>
-          <Text style={{ fontSize: 17, color: '#32335A' }}>{memo ? memo : category}</Text>
-          <Text style={{ color: '#9EA0B2', marginTop: 5 }}>{date}</Text>
+          <Text style={{ fontSize: 17, color: Colors.cardHeadingColor }}>{memo ? memo : category}</Text>
+          <Text style={{ color: Colors.dateColorOnWhitebackground, marginTop: 5 }}>{date}</Text>
         </View>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginRight: 10 }}>
-          <Text style={{ color: textColor, fontSize: 17 }}>{symbol}{amount}</Text>
+          <Text style={{ color: textColor , fontSize: 17 }}>{symbol}{amount}</Text>
         </View>
       </View>
     </TouchableOpacity>
