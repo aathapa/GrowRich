@@ -15,8 +15,7 @@ import { openDatabase } from 'react-native-sqlite-storage'
 import uuid from 'uuid/v4'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
-import TopBar from 'component/Topbar'
-import { CategoryListing, Form } from 'component'
+import { CategoryListing, Form, TopBar} from 'component'
 
 import { formatDate } from 'helper'
 
