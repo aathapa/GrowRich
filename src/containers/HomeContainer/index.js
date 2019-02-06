@@ -25,7 +25,6 @@ import styles from './style'
 
 const { height } = Dimensions.get('window')
 
-
 const db = openDatabase({ name: 'Expense.db' })
 
 const LineargradientAnimation = new Animated.createAnimatedComponent(Linergradient)
@@ -39,7 +38,7 @@ class HomeContainer extends Component {
     isDateModalVisible: false,
     selectedTransactionType: null,
     currentYear: new Date().getFullYear(),
-    selectedMonth: null,
+    selectedMonth: new Date().getMonth() + 1,
     isTransactionItemModalVisible: false
   }
   scrollY = new Animated.Value(0)
@@ -59,6 +58,7 @@ class HomeContainer extends Component {
 
   onMonthPressed(num) {
     const { currentYear } = this.state
+    this.setState({ selectedMonth: num })
     const lastDate = new Date(currentYear, num, 0).getDate()
     // console.log('First Date', firstMonthDay(currentYear, num, 1), 'Last Date', lastMonthDay(currentYear, num, lastDate))
     let data = []
@@ -80,9 +80,15 @@ class HomeContainer extends Component {
 
   onDeletePressed() {
     const { id } = this.state.selectedTransactionData
-    deleteTransactionItem(db, vars= [id])
+    deleteTransactionItem(db, vars = [id])
     this.fetchData()
     this.setState({ isTransactionItemModalVisible: false })
+  }
+
+  onArrowPressed(type) {
+    this.setState(prevState => ({
+      currentYear: type === '+' ? prevState.currentYear + 1 : prevState.currentYear - 1
+    }))
   }
 
   render() {
@@ -103,7 +109,8 @@ class HomeContainer extends Component {
       inputRange: [0, 50, 100],
       outputRange: [1, 0.4, 0],
     })
-    const isMonthActive = (value) = this.state.selectedMonth
+
+    const isMonthActive = (value) => this.state.selectedMonth === value
 
     return (
       <View style={{ height }}>
@@ -195,13 +202,16 @@ class HomeContainer extends Component {
             <View>
               <View>
                 <View style={{ flexDirection: 'row' }}>
-                  <TouchableOpacity style={{ flex: 1 }} onPress={() => this.setState({ currentYear: this.state.currentYear - 1 })}>
+                  <TouchableOpacity style={{ flex: 1 }} onPress={() => this.onArrowPressed('-')}>
                     <IonIcons name={Icons.IonIcons.arrowBack} size={20} color="#000" />
                   </TouchableOpacity>
                   <View style={{ flex: 3, alignItems: 'center' }}>
                     <Text>{this.state.currentYear}</Text>
                   </View>
-                  <TouchableOpacity style={{ flex: 1, alignItems: 'flex-end' }}>
+                  <TouchableOpacity
+                    style={{ flex: 1, alignItems: 'flex-end' }}
+                    onPress={() => this.onArrowPressed('+')}
+                  >
                     <IonIcons name={Icons.IonIcons.arrowForward} size={20} color="#000" />
                   </TouchableOpacity>
                 </View>
@@ -212,9 +222,12 @@ class HomeContainer extends Component {
                     <TouchableOpacity
                       onPress={() => this.onMonthPressed(num)}
                       key={abbr}
-                      style={{ height: 50, width: 50, justifyContent: 'center', alignItems: 'center' }}
+                      style={{ height: 50, width: 50 }}
                     >
-                      <Text style={{ fontSize: 17 }}>{abbr}</Text>
+                      <View style={[styles.dateModalView, isMonthActive(num) ? styles.selectedDateModalView : null]}>
+                        <Text style={[{ fontSize: 17 }, isMonthActive(num) ? styles.selectedDateModalViewText : null]}>{abbr}</Text>
+                      </View>
+
                     </TouchableOpacity>
                   )
                 })}
@@ -224,23 +237,7 @@ class HomeContainer extends Component {
 
         </Modal>
         <TouchableOpacity
-          style={{
-            position: 'absolute',
-            bottom: 80,
-            right: 20,
-            height: 50,
-            width: 50,
-            borderRadius: 25,
-            backgroundColor: '#ff9f43',
-            justifyContent: 'center',
-            alignItems: 'center',
-            shadowColor: '#000',
-            shadowOffset: {
-              height: 5,
-            },
-            shadowOpacity: 0.2,
-            zIndex: 1
-          }}
+          style={styles.filterView}
           onPress={() => this.setState({ isDateModalVisible: true })}
         >
           <IonIcons name={Icons.IonIcons.filter} size={25} color="#fff" />
@@ -250,7 +247,7 @@ class HomeContainer extends Component {
           isVisible={this.state.isTransactionItemModalVisible}
           onBackdropPress={() => this.setState({ isTransactionItemModalVisible: false })}
           data={this.state.selectedTransactionData}
-          onDeletePressed={()=> this.onDeletePressed()}
+          onDeletePressed={() => this.onDeletePressed()}
         >
 
         </ModalView>
@@ -259,6 +256,13 @@ class HomeContainer extends Component {
     );
   }
 }
+
+/**  
+  -----------------------------
+    Transaction Detail Modal
+  -----------------------------
+
+*/
 
 function ModalView({
   isVisible,
@@ -283,15 +287,10 @@ function ModalView({
       onBackdropPress={onBackdropPress}
       backdropOpacity={0.8}
     >
-      <View style={{
-        backgroundColor: "white",
-        borderRadius: 4,
-        height: 250,
-        padding: 20
-      }}>
-        <View style={{ height: 30, flexDirection: 'row', height: 50, alignItems: 'center', }}>
+      <View style={styles.transactionDetailModalView}>
+        <View style={styles.transactionDetailModalViewHeader}>
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <View style={{ backgroundColor: color, height: 32, width: 32, borderRadius: 16, justifyContent: 'center', alignItems: 'center' }}>
+            <View style={[{backgroundColor: color}, styles.transactionDetailModalViewHeaderImageView]}>
               <Image
                 source={Images[category]}
                 style={{ width: 20, height: 20 }}
@@ -316,44 +315,43 @@ function ModalView({
         </View>
         <View style={{ height: 0.7, backgroundColor: '#000' }} />
         <View style={{ height: 150, paddingTop: 20 }}>
-          <View style={{ flexDirection: 'row', height: 30 }}>
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 15, color: '#616161' }}>Category</Text>
-            </View>
-            <View style={{ flex: 2 }}>
-              <Text style={{ fontSize: 16 }}>{transaction_type}</Text>
-            </View>
-          </View>
-          <View style={{ flexDirection: 'row', height: 30 }}>
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 15, color: '#616161' }}>Amount</Text>
-            </View>
-            <View style={{ flex: 2 }}>
-              <Text>{amount}</Text>
-            </View>
-          </View>
-          <View style={{ flexDirection: 'row', height: 30 }}>
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 15, color: '#616161' }}>Memo</Text>
-            </View>
-            <View style={{ flex: 2 }}>
-              <Text>{memo}</Text>
-            </View>
-          </View>
-          <View style={{ flexDirection: 'row' }}>
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 15, color: '#616161' }}>Date</Text>
-            </View>
-            <View style={{ flex: 2 }}>
-              <Text>{transaction_date}</Text>
-            </View>
-          </View>
-
-
+          <TransactionDetailContent
+            type="Category"
+            value={category}
+          />
+          <TransactionDetailContent
+            type="Amount"
+            value={amount}
+          />
+          {memo !== '' && <TransactionDetailContent
+            type="Memo"
+            value={memo}
+          />}
+          
+          <TransactionDetailContent
+            type="Date"
+            value={transaction_date}
+          />
         </View>
       </View>
 
     </Modal>
+  )
+}
+
+function TransactionDetailContent({ 
+  value,
+  type
+}) {
+  return (
+    <View style={{ flexDirection: 'row', height: 30 }}>
+      <View style={{ flex: 1 }}>
+        <Text style={{ fontSize: 15, color: '#616161' }}>{type}</Text>
+      </View>
+      <View style={{ flex: 2 }}>
+        <Text style={{ fontSize: 16 }}>{value}</Text>
+      </View>
+    </View>
   )
 }
 
