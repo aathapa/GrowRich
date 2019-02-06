@@ -44,6 +44,12 @@ class CategoryContainer extends Component {
     this.fetchData()
   }
 
+  async fetchData() {
+    const categoryData = await fetchAllCategory(db)
+    this.setState({ categoryData })
+  }
+
+
   componentDidDisappear() {
     this.animationValue.setValue(0)
   }
@@ -108,11 +114,6 @@ class CategoryContainer extends Component {
     )
   }
 
-  async fetchData() {
-    const categoryData = await fetchAllCategory(db)
-    this.setState({ categoryData })
-  }
-
   render() {
     const { eachCategoryData } = this.state
 
@@ -143,7 +144,7 @@ class CategoryContainer extends Component {
                       data: { stroke: "#c43a31" },
                     }}
                     interpolation="natural"
-                    data={this.state.categoryWiseData}
+                    data={this.state.eachCategoryData}
                   />
                 </VictoryChart>
               </Animated.View>
