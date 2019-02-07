@@ -15,8 +15,7 @@ import IonIcons from 'react-native-vector-icons/Ionicons'
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import Modal from 'react-native-modal';
 
-import Info from 'component/Info'
-import Card from 'component/Card'
+import { Info, Card, EmptyDataWithButton } from 'component'
 
 import { Images, Icons } from 'globalData'
 import { month } from 'helper'
@@ -91,8 +90,18 @@ class HomeContainer extends Component {
     }))
   }
 
+  switchToTab() {
+    Navigation.mergeOptions(this.props.componentId, {
+      bottomTabs: {
+        currentTabIndex: 2
+      }
+    })
+  }
+
+
   render() {
-    const { currentYear } = this.state
+    const { currentYear, transactionData, isDateModalVisible, isTransactionItemModalVisible, selectedTransactionData } = this.state
+    console.log(this.state.selectedMonth)
     const inputRange = [0, 20, 40, 60, 80, 100]
     const translateY = this.scrollY.interpolate({
       inputRange,
@@ -114,157 +123,205 @@ class HomeContainer extends Component {
 
     return (
       <View style={{ height }}>
-        <LineargradientAnimation style={{
-          height: 300,
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          transform: [
-            { translateY }
-          ],
-        }}
-          colors={['#5B3BB4', '#8B4FCB']}>
-          <View style={{ flex: 2, justifyContent: 'center', alignItems: 'center', }}>
-            <View>
-              <Animated.Text style={{ color: '#ccc', fontWeight: '600', opacity: textOpacity }}>CURRENT BALANCE</Animated.Text>
-            </View>
-            <Animated.View style={{ transform: [{ translateY: balanceTextMargin }] }}>
-
-              <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={{ color: '#fff', padding: 10, fontSize: 35 }}>12033444</Text>
-              </View>
-            </Animated.View>
-            <View>
-              <Animated.Text style={{ color: '#fff', fontWeight: '600', opacity: textOpacity }}>September 2018</Animated.Text>
-            </View>
-
-          </View>
-          <View style={{ flex: 1, flexDirection: 'row', marginHorizontal: 15, alignItems: 'center' }}>
-            <View style={{ flex: 2, }}>
-              <Info
-                iconName="arrow-up"
-                type="INCOME"
-                typeAmount="12000"
-                iconColor="green"
-                opacity={textOpacity}
-              />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Info
-                iconName="arrow-down"
-                type="EXPENSE"
-                typeAmount="13000"
-                iconColor="red"
-                opacity={textOpacity}
-
-              />
-            </View>
-
-
-          </View>
-        </LineargradientAnimation>
-        <View>
-          <AnimatedFlatList
-            contentContainerStyle={{ paddingTop: 225, paddingBottom: 50, }}
-            bounces={false}
-            data={this.state.transactionData}
-            renderItem={({ item }) => <Card
-              id={item.id}
-              category={item.category}
-              amount={item.amount}
-              type={item.transaction_type}
-              date={item.transaction_date}
-              memo={item.memo}
-              color={item.color}
-              image={Images}
-              onPress={() => this.setState({ isTransactionItemModalVisible: true, selectedTransactionData: item })}
-            />
-            }
-            keyExtractor={(item) => item.id}
-            onScroll={
-              Animated.event(
-                [{ nativeEvent: { contentOffset: { y: this.scrollY } }, }],
-                { useNativeDriver: true }
-              )
-            }
-            scrollEventThrottle={10}
-          />
-        </View>
-
-        <Modal
-          isVisible={this.state.isDateModalVisible}
-          style={{ justifyContent: 'flex-end', margin: 0 }}
-          animationInTiming={50}
-          onBackdropPress={() => this.setState({ isDateModalVisible: false })}
-          backdropOpacity={0.8}
-        >
-          <View style={styles.modalMainView}>
-            <View>
-              <View>
-                <View style={{ flexDirection: 'row' }}>
-                  <TouchableOpacity style={{ flex: 1 }} onPress={() => this.onArrowPressed('-')}>
-                    <IonIcons name={Icons.IonIcons.arrowBack} size={20} color="#000" />
-                  </TouchableOpacity>
-                  <View style={{ flex: 3, alignItems: 'center' }}>
-                    <Text>{this.state.currentYear}</Text>
-                  </View>
-                  <TouchableOpacity
-                    style={{ flex: 1, alignItems: 'flex-end' }}
-                    onPress={() => this.onArrowPressed('+')}
-                  >
-                    <IonIcons name={Icons.IonIcons.arrowForward} size={20} color="#000" />
-                  </TouchableOpacity>
+        {transactionData.length > 0 ?
+          <View>
+            <LineargradientAnimation style={{
+              height: 280,
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              transform: [
+                { translateY }
+              ],
+            }}
+              colors={['#5B3BB4', '#8B4FCB']}>
+              <View style={{ flex: 2, justifyContent: 'center', alignItems: 'center', }}>
+                <View>
+                  <Animated.Text style={{ color: '#ccc', fontWeight: '600', opacity: textOpacity }}>CURRENT BALANCE</Animated.Text>
                 </View>
-              </View>
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
-                {month.map(({ fullMonth, abbr, num }) => {
-                  return (
-                    <TouchableOpacity
-                      onPress={() => this.onMonthPressed(num)}
-                      key={abbr}
-                      style={{ height: 50, width: 50 }}
-                    >
-                      <View style={[styles.dateModalView, isMonthActive(num) ? styles.selectedDateModalView : null]}>
-                        <Text style={[{ fontSize: 17 }, isMonthActive(num) ? styles.selectedDateModalViewText : null]}>{abbr}</Text>
-                      </View>
+                <Animated.View style={{ transform: [{ translateY: balanceTextMargin }] }}>
 
-                    </TouchableOpacity>
+                  <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style={{ color: '#fff', padding: 10, fontSize: 35 }}>12033444</Text>
+                  </View>
+                </Animated.View>
+                <View>
+                  <Animated.Text style={{ color: '#fff', fontWeight: '600', opacity: textOpacity }}>September 2018</Animated.Text>
+                </View>
+
+              </View>
+              <View style={{ flex: 1, flexDirection: 'row', marginHorizontal: 15, alignItems: 'center' }}>
+                <View style={{ flex: 2, }}>
+                  <Info
+                    iconName="arrow-up"
+                    type="INCOME"
+                    typeAmount="12000"
+                    iconColor="green"
+                    opacity={textOpacity}
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Info
+                    iconName="arrow-down"
+                    type="EXPENSE"
+                    typeAmount="13000"
+                    iconColor="red"
+                    opacity={textOpacity}
+
+                  />
+                </View>
+
+
+              </View>
+            </LineargradientAnimation>
+            <View style={{ height: height }}>
+              <AnimatedFlatList
+                contentContainerStyle={{ paddingTop: 225, paddingBottom: 80, }}
+                bounces={false}
+                data={transactionData}
+                renderItem={({ item }) => <Card
+                  id={item.id}
+                  category={item.category}
+                  amount={item.amount}
+                  type={item.transaction_type}
+                  date={item.transaction_date}
+                  memo={item.memo}
+                  color={item.color}
+                  image={Images}
+                  onPress={() =>
+                    this.setState({
+                      isTransactionItemModalVisible: true,
+                      selectedTransactionData: item
+                    })}
+                />
+                }
+                keyExtractor={(item) => item.id}
+                onScroll={
+                  Animated.event(
+                    [{ nativeEvent: { contentOffset: { y: this.scrollY } }, }],
+                    { useNativeDriver: true }
                   )
-                })}
-              </View>
+                }
+                scrollEventThrottle={10}
+              />
             </View>
+            <TouchableOpacity
+              style={styles.filterView}
+              onPress={() => this.setState({ isDateModalVisible: true })}
+            >
+              <IonIcons name={Icons.IonIcons.filter} size={25} color="#fff" />
+            </TouchableOpacity>
           </View>
+          : <View style={{ height, justifyContent: 'center', alignItems: 'center'}}>
+            <EmptyDataWithButton
+              title="Transaction Empty"
+              buttonTitle="Start tracking your money"
+              onPress={()=> this.switchToTab()}
+            />
+          </View>
+        }
+        
 
-        </Modal>
-        <TouchableOpacity
-          style={styles.filterView}
-          onPress={() => this.setState({ isDateModalVisible: true })}
-        >
-          <IonIcons name={Icons.IonIcons.filter} size={25} color="#fff" />
-        </TouchableOpacity>
+        <DateModal
+          isVisible={isDateModalVisible}
+          onBackdropPress={() => this.setState({ isDateModalVisible: false })}
+          currentYear={currentYear}
+          onArrowBackPressed={() => this.onArrowPressed('-')}
+          onArrowForwardPressed={() => this.onArrowPressed('+')}
+          onMonthPressed={(num) => this.onMonthPressed(num)}
+          isMonthActive={(num) => isMonthActive(num)}
 
-        <ModalView
-          isVisible={this.state.isTransactionItemModalVisible}
+        />
+
+        <TransactionDetailModalView
+          isVisible={isTransactionItemModalVisible}
           onBackdropPress={() => this.setState({ isTransactionItemModalVisible: false })}
-          data={this.state.selectedTransactionData}
+          data={selectedTransactionData}
           onDeletePressed={() => this.onDeletePressed()}
-        >
-
-        </ModalView>
+        />
 
       </View>
     );
   }
 }
 
+
+
+/**
+ 
+  --------------------------------
+            Date Modal
+  --------------------------------              
+
+ */
+
+function DateModal({
+  isVisible,
+  onBackdropPress,
+  onArrowBackPressed,
+  onArrowForwardPressed,
+  isMonthActive,
+  currentYear,
+  onMonthPressed
+}) {
+  return (
+    <Modal
+      isVisible={isVisible}
+      style={{ justifyContent: 'flex-end', margin: 0 }}
+      animationInTiming={50}
+      onBackdropPress={onBackdropPress}
+      backdropOpacity={0.8}
+    >
+      <View style={styles.modalMainView}>
+        <View>
+          <View>
+            <View style={{ flexDirection: 'row' }}>
+              <TouchableOpacity style={{ flex: 1 }} onPress={onArrowBackPressed}>
+                <IonIcons name={Icons.IonIcons.arrowBack} size={20} color="#000" />
+              </TouchableOpacity>
+              <View style={{ flex: 3, alignItems: 'center' }}>
+                <Text>{currentYear}</Text>
+              </View>
+              <TouchableOpacity
+                style={{ flex: 1, alignItems: 'flex-end' }}
+                onPress={onArrowForwardPressed}
+              >
+                <IonIcons name={Icons.IonIcons.arrowForward} size={20} color="#000" />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
+            {month.map(({ abbr, num }) => {
+              return (
+                <TouchableOpacity
+                  onPress={() => onMonthPressed(num)}
+                  key={abbr}
+                  style={{ height: 50, width: 50 }}
+                >
+                  <View style={[styles.dateModalView, isMonthActive(num) ? styles.selectedDateModalView : null]}>
+                    <Text style={[{ fontSize: 17 }, isMonthActive(num) ? styles.selectedDateModalViewText : null]}>{abbr}</Text>
+                  </View>
+
+                </TouchableOpacity>
+              )
+            })}
+          </View>
+        </View>
+      </View>
+
+    </Modal>
+  )
+}
+
 /**  
+ 
   -----------------------------
     Transaction Detail Modal
   -----------------------------
 
 */
 
-function ModalView({
+function TransactionDetailModalView({
   isVisible,
   onBackdropPress,
   data,
@@ -290,7 +347,7 @@ function ModalView({
       <View style={styles.transactionDetailModalView}>
         <View style={styles.transactionDetailModalViewHeader}>
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <View style={[{backgroundColor: color}, styles.transactionDetailModalViewHeaderImageView]}>
+            <View style={[{ backgroundColor: color }, styles.transactionDetailModalViewHeaderImageView]}>
               <Image
                 source={Images[category]}
                 style={{ width: 20, height: 20 }}
@@ -320,6 +377,10 @@ function ModalView({
             value={category}
           />
           <TransactionDetailContent
+            type="Type"
+            value={transaction_type}
+          />
+          <TransactionDetailContent
             type="Amount"
             value={amount}
           />
@@ -327,7 +388,7 @@ function ModalView({
             type="Memo"
             value={memo}
           />}
-          
+
           <TransactionDetailContent
             type="Date"
             value={transaction_date}
@@ -339,7 +400,7 @@ function ModalView({
   )
 }
 
-function TransactionDetailContent({ 
+function TransactionDetailContent({
   value,
   type
 }) {
