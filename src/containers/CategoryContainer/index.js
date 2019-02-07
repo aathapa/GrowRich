@@ -155,7 +155,7 @@ class CategoryContainer extends Component {
     const renderEmptyMessage = this.state.categoryFormText.length > 0 ?
       <EmptyDataWithButton
         title="Category Not Found"
-        buttonTitle="Click Here to Add Category"
+        buttonTitle="Add Category"
         componentId={this.props.componentId}
         onPress={() => alert('aa')}
       />
@@ -188,7 +188,7 @@ class CategoryContainer extends Component {
               <View style={{ height, justifyContent: 'center', alignItems: 'center' }}>
                 <EmptyDataWithButton
                   title="Data Empty"
-                  buttonTitle="Click Here To Add Transactions"
+                  buttonTitle="Add Transactions"
                   onPress={() => this.switchToTab()}
                 />
               </View>

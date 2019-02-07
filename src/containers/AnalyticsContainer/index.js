@@ -160,10 +160,10 @@ class AnalyticsContainer extends Component {
 
           </View>
         </View>
-          : <View style={{ justifyContent: 'center', alignItems: 'center', height }}>
+          : <View style={{ justifyContent: 'center', alignItems: 'center', height, backgroundColor: '#fff' }}>
             <EmptyDataWithButton
               title="Data Empty"
-              buttonTitle="Click Here to Add Transactions"
+              buttonTitle="Add Transactions"
               onPress={() => this.switchToTab()}
             />
           </View>
