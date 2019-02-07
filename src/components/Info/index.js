@@ -2,7 +2,7 @@ import React from 'react'
 import { View, Text, Animated } from 'react-native'
 import Feather from 'react-native-vector-icons/Feather'
 
-function Info({
+export function Info({
   iconName,
   type,
   typeAmount,
@@ -26,5 +26,3 @@ function Info({
     </Animated.View>
   )
 }
-
-export default Info

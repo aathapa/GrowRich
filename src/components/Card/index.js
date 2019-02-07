@@ -8,7 +8,7 @@ import {
 
 import { Colors } from '../../globalData/'
 
-function Card({
+export function Card({
   category,
   amount,
   type,
@@ -57,5 +57,3 @@ function Card({
 
   )
 }
-
-export default Card
