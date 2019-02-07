@@ -19,10 +19,11 @@ import { openDatabase } from 'react-native-sqlite-storage'
 import { Images } from 'globalData'
 import { fetchAllCategory } from '../../database/'
 import { randomColor } from 'helper'
+import { TabSwitch } from 'component'
 
 const db = openDatabase({ name: 'Expense.db' })
 
-const { width } = Dimensions.get('window')
+const { height, width } = Dimensions.get('window')
 
 let color = {}
 
@@ -144,12 +145,20 @@ class CategoryContainer extends Component {
                       data: { stroke: "#c43a31" },
                     }}
                     interpolation="natural"
-                    data={eachCategoryData.length === 1 ? [eachCategoryData[0], eachCategoryData[0]]: eachCategoryData}
+                    data={eachCategoryData.length === 1 ? [eachCategoryData[0], eachCategoryData[0]] : eachCategoryData}
 
                   />
                 </VictoryChart>
               </Animated.View>
-            </View> : <Text>Please Add Transactions </Text>
+            </View> :
+              <View style={{ height, justifyContent: 'center', alignItems: 'center' }}>
+                <TabSwitch
+                  title="Data Empty"
+                  buttonTitle="Click Here To Add Transactions"
+                  componentId={this.props.componentId}
+                  routeIndex={2}
+                />
+              </View>
           }
         </Animated.View>
 
