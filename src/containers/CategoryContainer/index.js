@@ -7,19 +7,21 @@ import {
   FlatList,
   Image,
   Dimensions,
-  Animated
+  Animated,
+  ActivityIndicator
 } from 'react-native'
 
 import { Navigation } from 'react-native-navigation'
 import LinearGradient from 'react-native-linear-gradient'
 import Feather from 'react-native-vector-icons/Feather'
 import { VictoryChart, VictoryLine, VictoryAxis } from 'victory-native'
-
 import { openDatabase } from 'react-native-sqlite-storage'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+
 import { Images } from 'globalData'
 import { fetchAllCategory } from '../../database/'
 import { randomColor } from 'helper'
-import { TabSwitch } from 'component'
+import { EmptyDataWithButton } from 'component'
 
 const db = openDatabase({ name: 'Expense.db' })
 
@@ -32,8 +34,11 @@ class CategoryContainer extends Component {
   state = {
     categoryData: [],
     selectedCategory: '',
-    eachCategoryData: []
+    eachCategoryData: [],
+    categoryFormText: ''
   }
+
+  arrayholder = []
 
   animationValue = new Animated.Value(0)
 
@@ -48,6 +53,7 @@ class CategoryContainer extends Component {
   async fetchData() {
     const categoryData = await fetchAllCategory(db)
     this.setState({ categoryData })
+    this.arrayholder = categoryData
   }
 
 
@@ -114,9 +120,27 @@ class CategoryContainer extends Component {
 
     )
   }
+  
+  onChangeCategoryText(categoryFormText) {
+    this.setState({ categoryFormText })
+    const searchText = categoryFormText.toUpperCase()
+    const searchedData = this.arrayholder.filter(d => {
+      const name = d.name.toUpperCase()
+      return name.indexOf(searchText) > -1
+    })
+    this.setState({ categoryData: searchedData })
+  }
+
+  switchToTab() {
+    Navigation.mergeOptions(this.props.componentId, {
+      bottomTabs: {
+        currentTabIndex: 2
+      }
+    })
+  }
 
   render() {
-    const { eachCategoryData } = this.state
+    const { eachCategoryData, categoryData } = this.state
 
     const translateX = this.animationValue.interpolate({
       inputRange: [0, 1],
@@ -127,6 +151,16 @@ class CategoryContainer extends Component {
       inputRange: [0, 0.5, 1],
       outputRange: [0, 0, 1]
     })
+
+    const renderEmptyMessage = this.state.categoryFormText.length > 0 ?
+      <EmptyDataWithButton
+        title="Category Not Found"
+        buttonTitle="Click Here to Add Category"
+        componentId={this.props.componentId}
+        onPress={() => alert('aa')}
+      />
+      : <ActivityIndicator size="small" />
+
     return (
       <View style={{}}>
         <Animated.View
@@ -152,11 +186,10 @@ class CategoryContainer extends Component {
               </Animated.View>
             </View> :
               <View style={{ height, justifyContent: 'center', alignItems: 'center' }}>
-                <TabSwitch
+                <EmptyDataWithButton
                   title="Data Empty"
                   buttonTitle="Click Here To Add Transactions"
-                  componentId={this.props.componentId}
-                  routeIndex={2}
+                  onPress={() => this.switchToTab()}
                 />
               </View>
           }
@@ -186,8 +219,11 @@ class CategoryContainer extends Component {
                   <Feather name="search" color="#656d78" size={25} />
                 </View>
                 <View style={{ flex: 8, justifyContent: 'center' }}>
+                  
                   <TextInput
                     placeholder="Search categories"
+                    onChangeText={categoryFormText => this.onChangeCategoryText(categoryFormText)}
+                    value={this.state.categoryFormText}
                   />
                 </View>
               </View>
@@ -195,11 +231,21 @@ class CategoryContainer extends Component {
 
           </LinearGradient>
           <View style={{ backgroundColor: '#FFFFFF', height: 470 }}>
-            <FlatList
-              data={this.state.categoryData}
-              renderItem={({ item }) => this.renderItems(item)}
-              keyExtractor={(item) => item.id}
-            />
+            <KeyboardAwareScrollView
+            >
+              {categoryData.length > 0 ?
+
+                <FlatList
+                  data={this.state.categoryData}
+                  renderItem={({ item }) => this.renderItems(item)}
+                  keyExtractor={(item) => item.id}
+                />
+                // 
+                : <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                  {renderEmptyMessage}
+                </View>
+              }
+            </KeyboardAwareScrollView>
           </View>
         </Animated.View>
 
