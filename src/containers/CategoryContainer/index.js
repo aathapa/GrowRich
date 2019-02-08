@@ -8,7 +8,8 @@ import {
   Image,
   Dimensions,
   Animated,
-  ActivityIndicator
+  ActivityIndicator,
+  BackHandler
 } from 'react-native'
 
 import { Navigation } from 'react-native-navigation'
@@ -35,7 +36,8 @@ class CategoryContainer extends Component {
     categoryData: [],
     selectedCategory: '',
     eachCategoryData: [],
-    categoryFormText: ''
+    categoryFormText: '',
+    open: false
   }
 
   arrayholder = []
@@ -48,17 +50,24 @@ class CategoryContainer extends Component {
 
   componentDidAppear() {
     this.fetchData()
+    this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (this.state.open) {
+        this.animateValue()
+        return true
+      } 
+      BackHandler.exitApp()
+      
+    })
+  }
+
+  componentDidDisappear() {
+    this.backHandler.remove()
   }
 
   async fetchData() {
     const categoryData = await fetchAllCategory(db)
     this.setState({ categoryData })
     this.arrayholder = categoryData
-  }
-
-
-  componentDidDisappear() {
-    this.animationValue.setValue(0)
   }
 
   fetchEachCategoryData() {
@@ -78,20 +87,28 @@ class CategoryContainer extends Component {
     })
   }
 
-  onCategoryItemClick(name, id) {
+  animateValue = () => {
+    const toValue = this.state.open ? 0 : 1
     Animated.timing(this.animationValue, {
-      toValue: 1,
+      toValue,
       duration: 200,
       useNativeDriver: true
     }).start()
 
+    this.setState(prevState => ({
+      open: !prevState.open
+    })
+    )
+  }
+
+  onCategoryItemClick(name, id) {
+    this.animateValue()
     this.setState({ selectedCategory: name }, () => {
       this.fetchEachCategoryData()
     })
-
   }
 
-  renderItems({ name, id }) {
+  renderItems = ({ name, id }) => {
     const exactColor = color[id] || randomColor()
     color[id] = exactColor
     return (
@@ -120,8 +137,8 @@ class CategoryContainer extends Component {
 
     )
   }
-  
-  onChangeCategoryText(categoryFormText) {
+
+  onChangeCategoryText = (categoryFormText) => {
     this.setState({ categoryFormText })
     const searchText = categoryFormText.toUpperCase()
     const searchedData = this.arrayholder.filter(d => {
@@ -140,7 +157,7 @@ class CategoryContainer extends Component {
   }
 
   render() {
-    const { eachCategoryData, categoryData } = this.state
+    const { eachCategoryData, categoryData, categoryFormText } = this.state
 
     const translateX = this.animationValue.interpolate({
       inputRange: [0, 1],
@@ -152,107 +169,170 @@ class CategoryContainer extends Component {
       outputRange: [0, 0, 1]
     })
 
-    const renderEmptyMessage = this.state.categoryFormText.length > 0 ?
-      <EmptyDataWithButton
-        title="Category Not Found"
-        buttonTitle="Add Category"
-        componentId={this.props.componentId}
-        onPress={() => alert('aa')}
-      />
-      : <ActivityIndicator size="small" />
-
     return (
-      <View style={{}}>
-        <Animated.View
-          style={{ position: 'absolute', top: 0, left: 0, right: 0, opacity, marginTop: 50, zIndex: 0 }}
-        >
-          {
-            eachCategoryData.length > 0 ? <View>
-              <View>
-                <Text>Chart</Text>
-              </View>
-              <Animated.View style={{}}>
-                <VictoryChart minDomain={{ y: 0 }}>
-                  <VictoryAxis dependentAxis />
-                  <VictoryLine
-                    style={{
-                      data: { stroke: "#c43a31" },
-                    }}
-                    interpolation="natural"
-                    data={eachCategoryData.length === 1 ? [eachCategoryData[0], eachCategoryData[0]] : eachCategoryData}
-
-                  />
-                </VictoryChart>
-              </Animated.View>
-            </View> :
-              <View style={{ height, justifyContent: 'center', alignItems: 'center' }}>
-                <EmptyDataWithButton
-                  title="Data Empty"
-                  buttonTitle="Add Transactions"
-                  onPress={() => this.switchToTab()}
-                />
-              </View>
-          }
+      <View style={{ height }}>
+        <CategoryChart
+          opacity={opacity}
+          eachCategoryData={eachCategoryData}
+          switchToTab={() => this.switchToTab()}
+          animateValue={this.animateValue}
+        />
+        <Animated.View style={{ transform: [{ translateX }] }}>
+          <CategoryHeader
+            onChangeCategoryText={this.onChangeCategoryText}
+            categoryFormText={categoryFormText}
+          />
+          <CategoryList
+            categoryData={categoryData}
+            renderItems={this.renderItems}
+            categoryFormText={categoryFormText}
+          />
         </Animated.View>
-
-        <Animated.View
-          style={{ transform: [{ translateX }] }}
-        >
-          <LinearGradient
-            style={{ height: 150, justifyContent: 'center', }}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            colors={['#8B4FCB', '#5B3BB4']}
-
-          >
-            <View style={{ marginHorizontal: 15, }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', paddingBottom: 20 }}>
-                <View style={{ flex: 1 }}>
-                  <Text style={{ color: '#fff', fontSize: 25, fontWeight: '600' }}>Categories</Text>
-                </View>
-                <TouchableOpacity style={{ flex: 1, alignItems: 'flex-end' }}>
-                  <Feather name="plus-circle" color="#fff" size={25} />
-                </TouchableOpacity>
-              </View>
-              <View style={{ flexDirection: 'row', backgroundColor: '#fff', height: 40, borderRadius: 20 }}>
-                <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-                  <Feather name="search" color="#656d78" size={25} />
-                </View>
-                <View style={{ flex: 8, justifyContent: 'center' }}>
-                  
-                  <TextInput
-                    placeholder="Search categories"
-                    onChangeText={categoryFormText => this.onChangeCategoryText(categoryFormText)}
-                    value={this.state.categoryFormText}
-                  />
-                </View>
-              </View>
-            </View>
-
-          </LinearGradient>
-          <View style={{ backgroundColor: '#FFFFFF', height: 470 }}>
-            <KeyboardAwareScrollView
-            >
-              {categoryData.length > 0 ?
-
-                <FlatList
-                  data={this.state.categoryData}
-                  renderItem={({ item }) => this.renderItems(item)}
-                  keyExtractor={(item) => item.id}
-                />
-                // 
-                : <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                  {renderEmptyMessage}
-                </View>
-              }
-            </KeyboardAwareScrollView>
-          </View>
-        </Animated.View>
-
       </View>
-
     )
   }
+}
+
+
+/**
+  -----------------------------
+
+        Category List
+
+  -----------------------------
+*/
+
+function CategoryList({
+  categoryData,
+  renderItems,
+  categoryFormText
+}) {
+  return (
+    <KeyboardAwareScrollView
+    >
+      {categoryData.length > 0 ?
+        <View style={{ backgroundColor: '#FFFFFF', height: 470 }}>
+          <FlatList
+            data={categoryData}
+            renderItem={({ item }) => renderItems(item)}
+            keyExtractor={(item) => item.id}
+          />
+
+        </View>
+        // 
+        : <View style={{ height: height - 150, justifyContent: 'center', alignItems: 'center' }}>
+          {categoryFormText.length > 0 ?
+            <EmptyDataWithButton
+              title="Category Not Found"
+              buttonTitle="Add Category"
+              onPress={() => alert('aa')}
+            />
+            : <ActivityIndicator size="small" />}
+        </View>
+      }
+    </KeyboardAwareScrollView>
+  )
+}
+
+/**
+  -----------------------------
+      
+        Category Header
+
+  -----------------------------        
+ */
+
+function CategoryHeader({
+  onChangeCategoryText,
+  categoryFormText
+}) {
+  return (
+    <LinearGradient
+      style={{ height: 150, justifyContent: 'center', }}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 0 }}
+      colors={['#8B4FCB', '#5B3BB4']}
+
+    >
+      <View style={{ marginHorizontal: 15, }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', paddingBottom: 20 }}>
+          <View style={{ flex: 1 }}>
+            <Text style={{ color: '#fff', fontSize: 25, fontWeight: '600' }}>Categories</Text>
+          </View>
+          <TouchableOpacity style={{ flex: 1, alignItems: 'flex-end' }}>
+            <Feather name="plus-circle" color="#fff" size={25} />
+          </TouchableOpacity>
+        </View>
+        <View style={{ flexDirection: 'row', backgroundColor: '#fff', height: 40, borderRadius: 20 }}>
+          <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+            <Feather name="search" color="#656d78" size={25} />
+          </View>
+          <View style={{ flex: 8, justifyContent: 'center' }}>
+
+            <TextInput
+              placeholder="Search categories"
+              onChangeText={categoryFormText => onChangeCategoryText(categoryFormText)}
+              value={categoryFormText}
+            />
+          </View>
+        </View>
+      </View>
+
+    </LinearGradient>
+  )
+}
+
+/**
+  -----------------------------
+
+        Category chart  
+
+  -----------------------------          
+ */
+
+function CategoryChart({
+  opacity,
+  eachCategoryData,
+  switchToTab,
+  animateValue
+}) {
+  return (
+    <Animated.View
+      style={{ position: 'absolute', top: 0, left: 0, right: 0, opacity, marginTop: 50, zIndex: 0, }}
+    >
+      <View style={{ marginHorizontal: 15 }}>
+        <TouchableOpacity
+          onPress={animateValue}
+        >
+          <Feather name="arrow-left" size={30} color="#757575" />
+        </TouchableOpacity>
+      </View>
+      {
+        eachCategoryData.length > 0 ? <View>
+          <View style={{}}>
+            <VictoryChart minDomain={{ y: 0 }}>
+              <VictoryAxis dependentAxis />
+              <VictoryLine
+                style={{
+                  data: { stroke: "#c43a31" },
+                }}
+                interpolation="natural"
+                data={eachCategoryData.length === 1 ? [eachCategoryData[0], eachCategoryData[0]] : eachCategoryData}
+
+              />
+            </VictoryChart>
+          </View>
+        </View> :
+          <View style={{ height, justifyContent: 'center', alignItems: 'center' }}>
+            <EmptyDataWithButton
+              title="Data Empty"
+              buttonTitle="Add Transactions"
+              onPress={switchToTab}
+            />
+          </View>
+      }
+    </Animated.View>
+  )
 }
 
 export default CategoryContainer
