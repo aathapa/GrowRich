@@ -116,7 +116,7 @@ class AddTransactionContainer extends Component {
     })
 
     return (
-      <View>
+      <View style={{height}}>
         <TopBar
           onPress={this.onTopbarHeadingPressed}
           rotate={rotate}
@@ -133,7 +133,10 @@ class AddTransactionContainer extends Component {
           />
         </Animated.View>
 
-        <KeyboardAwareScrollView>
+        <KeyboardAwareScrollView
+          extraScrollHeight={50}
+          enableOnAndroid
+        >
           <View style={{ marginHorizontal: 15, marginTop: 15 }}>
             <View style={{ borderBottomWidth: 0.7, borderBottomColor: '#5B3BB4' }}>
               <View>
