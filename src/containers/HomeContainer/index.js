@@ -125,76 +125,20 @@ class HomeContainer extends Component {
       <View style={{ height }}>
         {transactionData.length > 0 ?
           <View>
-            <LineargradientAnimation style={[styles.homeContainerHeaderView, { transform: [{ translateY }], }]}
-              colors={['#5B3BB4', '#8B4FCB']}>
-              <View style={{ flex: 2, justifyContent: 'center', alignItems: 'center', }}>
-                <View>
-                  <Animated.Text style={{ color: '#ccc', fontWeight: '600', opacity: textOpacity }}>CURRENT BALANCE</Animated.Text>
-                </View>
-                <Animated.View style={{ transform: [{ translateY: balanceTextMargin }] }}>
-
-                  <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                    <Text style={styles.homeContainerHeaderCurrentBalanceText}>12033444</Text>
-                  </View>
-                </Animated.View>
-                <View>
-                  <Animated.Text style={{ color: '#fff', fontWeight: '600', opacity: textOpacity }}>September 2018</Animated.Text>
-                </View>
-
-              </View>
-              <View style={{ flex: 1, flexDirection: 'row', marginHorizontal: 15, alignItems: 'center' }}>
-                <View style={{ flex: 2, }}>
-                  <Info
-                    iconName="arrow-up"
-                    type="INCOME"
-                    typeAmount="12000"
-                    iconColor="green"
-                    opacity={textOpacity}
-                  />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Info
-                    iconName="arrow-down"
-                    type="EXPENSE"
-                    typeAmount="13000"
-                    iconColor="red"
-                    opacity={textOpacity}
-
-                  />
-                </View>
-
-
-              </View>
-            </LineargradientAnimation>
+            <TransactionTotalValue
+              translateY={translateY}
+              textOpacity={textOpacity}
+              balanceTextMargin={balanceTextMargin}
+            />
             <View style={{ height: height }}>
-              <AnimatedFlatList
-                contentContainerStyle={styles.homeContainerTransactionList}
-                bounces={false}
-                data={transactionData}
-                renderItem={({ item }) => <Card
-                  id={item.id}
-                  category={item.category}
-                  amount={item.amount}
-                  type={item.transaction_type}
-                  date={item.transaction_date}
-                  memo={item.memo}
-                  color={item.color}
-                  image={Images}
-                  onPress={() =>
-                    this.setState({
-                      isTransactionItemModalVisible: true,
-                      selectedTransactionData: item
-                    })}
-                />
-                }
-                keyExtractor={(item) => item.id}
-                onScroll={
-                  Animated.event(
-                    [{ nativeEvent: { contentOffset: { y: this.scrollY } }, }],
-                    { useNativeDriver: true }
-                  )
-                }
-                scrollEventThrottle={10}
+              <TransactionList
+                transactionData={transactionData}
+                scrollY={this.scrollY}
+                onPress={(item) =>
+                  this.setState({
+                    isTransactionItemModalVisible: true,
+                    selectedTransactionData: item
+                  })}
               />
             </View>
             <TouchableOpacity
@@ -212,8 +156,7 @@ class HomeContainer extends Component {
             />
           </View>
         }
-
-
+        
         <DateModal
           isVisible={isDateModalVisible}
           onBackdropPress={() => this.setState({ isDateModalVisible: false })}
@@ -222,7 +165,6 @@ class HomeContainer extends Component {
           onArrowForwardPressed={() => this.onArrowPressed('+')}
           onMonthPressed={(num) => this.onMonthPressed(num)}
           isMonthActive={(num) => isMonthActive(num)}
-
         />
 
         <TransactionDetailModalView
@@ -237,15 +179,116 @@ class HomeContainer extends Component {
   }
 }
 
+/**
+  --------------------------------
+
+      Total Transaction Value
+
+  --------------------------------
+ */
+
+function TransactionTotalValue({
+  translateY,
+  textOpacity,
+  balanceTextMargin,
+
+}) {
+  return (
+    <LineargradientAnimation style={[styles.homeContainerHeaderView, { transform: [{ translateY }], }]}
+      colors={['#5B3BB4', '#8B4FCB']}>
+      <View style={{ flex: 2, justifyContent: 'center', alignItems: 'center', }}>
+        <View>
+          <Animated.Text style={{ color: '#ccc', fontWeight: '600', opacity: textOpacity }}>CURRENT BALANCE</Animated.Text>
+        </View>
+        <Animated.View style={{ transform: [{ translateY: balanceTextMargin }] }}>
+
+          <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+            <Text style={styles.homeContainerHeaderCurrentBalanceText}>12033444</Text>
+          </View>
+        </Animated.View>
+        <View>
+          <Animated.Text style={{ color: '#fff', fontWeight: '600', opacity: textOpacity }}>September 2018</Animated.Text>
+        </View>
+
+      </View>
+      <View style={{ flex: 1, flexDirection: 'row', marginHorizontal: 15, alignItems: 'center' }}>
+        <View style={{ flex: 2, }}>
+          <Info
+            iconName="arrow-down"
+            type="INCOME"
+            typeAmount="12000"
+            iconColor="green"
+            opacity={textOpacity}
+          />
+        </View>
+        <View style={{ flex: 1 }}>
+          <Info
+            iconName="arrow-up"
+            type="EXPENSE"
+            typeAmount="13000"
+            iconColor="red"
+            opacity={textOpacity}
+
+          />
+        </View>
+
+
+      </View>
+    </LineargradientAnimation>
+  )
+}
+
+/**
+  ----------------------------------
+
+          Transaction List
+
+  ----------------------------------          
+*/
+
+function TransactionList({
+  transactionData,
+  scrollY,
+  onPress
+}) {
+  return (
+    <AnimatedFlatList
+      contentContainerStyle={styles.homeContainerTransactionList}
+      bounces={false}
+      data={transactionData}
+      renderItem={({ item }) => <Card
+        id={item.id}
+        category={item.category}
+        amount={item.amount}
+        type={item.transaction_type}
+        date={item.transaction_date}
+        memo={item.memo}
+        color={item.color}
+        image={Images}
+        onPress={()=> onPress(item)}
+      />
+      }
+      keyExtractor={(item) => item.id}
+      onScroll={
+        Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } }, }],
+          { useNativeDriver: true }
+        )
+      }
+      scrollEventThrottle={10}
+    />
+  )
+}
+
 
 
 /**
- 
   --------------------------------
-            Date Modal
-  --------------------------------              
 
- */
+            Date Modal
+
+  --------------------------------              
+*/
 
 function DateModal({
   isVisible,
@@ -306,11 +349,11 @@ function DateModal({
 }
 
 /**  
- 
-  -----------------------------
-    Transaction Detail Modal
   -----------------------------
 
+    Transaction Detail Modal
+
+  -----------------------------
 */
 
 function TransactionDetailModalView({
