@@ -3,7 +3,8 @@ export {
   createTransactionTable,
   insertDataInTransaction,
   fetchGroupByData,
-  deleteTransactionItem
+  deleteTransactionItem,
+  fetchEachCategoryData
 } from './transactions.model'
 
 export {

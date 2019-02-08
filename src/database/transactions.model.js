@@ -47,6 +47,15 @@ export function fetchGroupByData(db, vars) {
   )
 }
 
+export function fetchEachCategoryData(db, vars = []) {
+  return select(db, `
+    SELECT amount AS y FROM Transactions
+      WHERE category = ?
+  `,
+    vars
+  )
+}
+
 export function deleteTransactionItem(db, vars) {
   remove(db, `
     DELETE FROM Transactions

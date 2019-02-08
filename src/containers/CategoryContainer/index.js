@@ -20,7 +20,7 @@ import { openDatabase } from 'react-native-sqlite-storage'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 import { Images } from 'globalData'
-import { fetchAllCategory } from '../../database/'
+import { fetchAllCategory, fetchEachCategoryData } from '../../database/'
 import { randomColor } from 'helper'
 import { EmptyDataWithButton } from 'component'
 
@@ -54,9 +54,9 @@ class CategoryContainer extends Component {
       if (this.state.open) {
         this.animateValue()
         return true
-      } 
+      }
       BackHandler.exitApp()
-      
+
     })
   }
 
@@ -70,21 +70,9 @@ class CategoryContainer extends Component {
     this.arrayholder = categoryData
   }
 
-  fetchEachCategoryData() {
-    let eachCategoryData = []
-    db.transaction(txn => {
-      txn.executeSql(`
-          SELECT amount AS y FROM Transactions
-          WHERE category = ?
-        `, [this.state.selectedCategory],
-        (tx, { rows }) => {
-          for (let i = 0; i < rows.length; i++) {
-            eachCategoryData.push(rows.item(i))
-          }
-          this.setState({ eachCategoryData })
-        }
-      )
-    })
+  async fetchCategoryData() {
+    const eachCategoryData = await fetchEachCategoryData(db, vars = [this.state.selectedCategory])
+    this.setState({ eachCategoryData })
   }
 
   animateValue = () => {
@@ -104,7 +92,8 @@ class CategoryContainer extends Component {
   onCategoryItemClick(name, id) {
     this.animateValue()
     this.setState({ selectedCategory: name }, () => {
-      this.fetchEachCategoryData()
+      this.fetchCategoryData
+      ()
     })
   }
 
