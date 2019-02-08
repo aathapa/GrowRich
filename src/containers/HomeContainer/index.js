@@ -288,7 +288,7 @@ function DateModal({
                 <TouchableOpacity
                   onPress={() => onMonthPressed(num)}
                   key={abbr}
-                  style={{ height: 50, width: 50 }}
+                  style={styles.dateModalMonthview}
                 >
                   <View style={[styles.dateModalView, isMonthActive(num) ? styles.selectedDateModalView : null]}>
                     <Text style={[{ fontSize: 17 }, isMonthActive(num) ? styles.selectedDateModalViewText : null]}>{abbr}</Text>

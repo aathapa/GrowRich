@@ -18,7 +18,7 @@ export default styles = {
   },
   filterView: {
     position: 'absolute',
-    bottom: verticalScale(80),
+    bottom: moderateScale(100, 1),
     right: scale(20),
     height: moderateScale(50),
     width: moderateScale(50),
@@ -31,7 +31,8 @@ export default styles = {
       height: verticalScale(5),
     },
     shadowOpacity: 0.2,
-    zIndex: 1
+    zIndex: 1,
+    elevation: 6
   },
   modalMainView: {
     backgroundColor: '#fff',
@@ -50,6 +51,10 @@ export default styles = {
     borderRadius: moderateScale(20),
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  dateModalMonthview: {
+    height: moderateScale(50),
+    width: moderateScale(50)
   },
   selectedDateModalView: {
     backgroundColor: '#F25365',
