@@ -61,7 +61,9 @@ class CategoryContainer extends Component {
   }
 
   componentDidDisappear() {
+    this.animateValue()
     this.backHandler.remove()
+
   }
 
   async fetchData() {
@@ -81,19 +83,21 @@ class CategoryContainer extends Component {
       toValue,
       duration: 200,
       useNativeDriver: true
-    }).start()
-
-    this.setState(prevState => ({
-      open: !prevState.open
+    }).start(finished => {
+      if (finished) {
+        this.setState(prevState => ({
+          open: !prevState.open
+        })
+        )
+      }
     })
-    )
   }
 
   onCategoryItemClick(name, id) {
     this.animateValue()
     this.setState({ selectedCategory: name }, () => {
       this.fetchCategoryData
-      ()
+        ()
     })
   }
 
@@ -287,19 +291,20 @@ function CategoryChart({
 }) {
   return (
     <Animated.View
-      style={{ position: 'absolute', top: 0, left: 0, right: 0, opacity, marginTop: 50, zIndex: 0, }}
+      style={{ position: 'absolute', top: 0, left: 0, right: 0, opacity, paddingHorizontal: 15, }}
     >
-      <View style={{ marginHorizontal: 15 }}>
+      <View style={{ height: 80, justifyContent: 'center' }}>
         <TouchableOpacity
           onPress={animateValue}
         >
           <Feather name="arrow-left" size={30} color="#757575" />
         </TouchableOpacity>
       </View>
+
       {
-        eachCategoryData.length > 0 ? <View>
+        eachCategoryData.length > 0 ?
           <View style={{}}>
-            <VictoryChart minDomain={{ y: 0 }}>
+            <VictoryChart minDomain={{ y: 0 }} maxDomain={eachCategoryData}>
               <VictoryAxis dependentAxis />
               <VictoryLine
                 style={{
@@ -310,8 +315,7 @@ function CategoryChart({
 
               />
             </VictoryChart>
-          </View>
-        </View> :
+          </View> :
           <View style={{ height, justifyContent: 'center', alignItems: 'center' }}>
             <EmptyDataWithButton
               title="Data Empty"
