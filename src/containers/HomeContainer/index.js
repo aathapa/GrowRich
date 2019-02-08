@@ -125,15 +125,7 @@ class HomeContainer extends Component {
       <View style={{ height }}>
         {transactionData.length > 0 ?
           <View>
-            <LineargradientAnimation style={{
-              height: 280,
-              position: 'absolute',
-              left: 0,
-              right: 0,
-              transform: [
-                { translateY }
-              ],
-            }}
+            <LineargradientAnimation style={[styles.homeContainerHeaderView, { transform: [{ translateY }], }]}
               colors={['#5B3BB4', '#8B4FCB']}>
               <View style={{ flex: 2, justifyContent: 'center', alignItems: 'center', }}>
                 <View>
@@ -142,7 +134,7 @@ class HomeContainer extends Component {
                 <Animated.View style={{ transform: [{ translateY: balanceTextMargin }] }}>
 
                   <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                    <Text style={{ color: '#fff', padding: 10, fontSize: 35 }}>12033444</Text>
+                    <Text style={styles.homeContainerHeaderCurrentBalanceText}>12033444</Text>
                   </View>
                 </Animated.View>
                 <View>
@@ -176,7 +168,7 @@ class HomeContainer extends Component {
             </LineargradientAnimation>
             <View style={{ height: height }}>
               <AnimatedFlatList
-                contentContainerStyle={{ paddingTop: 225, paddingBottom: 80, }}
+                contentContainerStyle={styles.homeContainerTransactionList}
                 bounces={false}
                 data={transactionData}
                 renderItem={({ item }) => <Card
@@ -212,15 +204,15 @@ class HomeContainer extends Component {
               <IonIcons name={Icons.IonIcons.filter} size={25} color="#fff" />
             </TouchableOpacity>
           </View>
-          : <View style={{ height, justifyContent: 'center', alignItems: 'center'}}>
+          : <View style={{ height, justifyContent: 'center', alignItems: 'center' }}>
             <EmptyDataWithButton
               title="Transaction Empty"
               buttonTitle="Start tracking your money"
-              onPress={()=> this.switchToTab()}
+              onPress={() => this.switchToTab()}
             />
           </View>
         }
-        
+
 
         <DateModal
           isVisible={isDateModalVisible}
@@ -336,7 +328,6 @@ function TransactionDetailModalView({
     color,
     transaction_date,
   } = data
-  console.log(data)
   return (
     <Modal
       isVisible={isVisible}
@@ -355,7 +346,7 @@ function TransactionDetailModalView({
             </View>
           </View>
           <View style={{ flex: 5 }}>
-            <Text style={{ fontSize: 17 }}>{category}</Text>
+            <Text style={styles.transactionDetailModalViewHeaderText}>{category}</Text>
           </View>
           <View style={{ flex: 2, flexDirection: 'row', justifyContent: 'space-around', }}>
             <TouchableOpacity
@@ -370,8 +361,8 @@ function TransactionDetailModalView({
             </TouchableOpacity>
           </View>
         </View>
-        <View style={{ height: 0.7, backgroundColor: '#000' }} />
-        <View style={{ height: 150, paddingTop: 20 }}>
+        <View style={{ height: 0.4, backgroundColor: '#000' }} />
+        <View style={styles.transactonDetailModalViewContent}>
           <TransactionDetailContent
             type="Category"
             value={category}
@@ -405,7 +396,7 @@ function TransactionDetailContent({
   type
 }) {
   return (
-    <View style={{ flexDirection: 'row', height: 30 }}>
+    <View style={styles.transactonDetailModalViewContentTypeText}>
       <View style={{ flex: 1 }}>
         <Text style={{ fontSize: 15, color: '#616161' }}>{type}</Text>
       </View>

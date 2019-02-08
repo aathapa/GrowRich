@@ -1,30 +1,42 @@
 import { moderateScale, verticalScale, scale } from 'react-native-size-matters'
 
 export default styles = {
-  gradientHeight: {
-    // height: verticalScale(250)
+  homeContainerHeaderView: {
+    height: verticalScale(280),
+    position: 'absolute',
+    left: 0,
+    right: 0,
+  },
+  homeContainerHeaderCurrentBalanceText: {
+    color: '#fff',
+    padding: moderateScale(10),
+    fontSize: moderateScale(35)
+  },
+  homeContainerTransactionList: {
+    paddingTop: verticalScale(220),
+    paddingBottom: verticalScale(80),
   },
   filterView: {
     position: 'absolute',
-    bottom: 80,
-    right: 20,
-    height: 50,
-    width: 50,
-    borderRadius: 25,
+    bottom: verticalScale(80),
+    right: scale(20),
+    height: moderateScale(50),
+    width: moderateScale(50),
+    borderRadius: moderateScale(25),
     backgroundColor: '#ff9f43',
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
-      height: 5,
+      height: verticalScale(5),
     },
     shadowOpacity: 0.2,
     zIndex: 1
   },
   modalMainView: {
     backgroundColor: '#fff',
-    height: 200,
-    padding: 20
+    height: verticalScale(200),
+    padding: verticalScale(20)
   },
   modalTransactionTypeView: {
     flex: 1,
@@ -33,9 +45,9 @@ export default styles = {
     height: 30
   },
   dateModalView: {
-    height: 40,
-    width: 40,
-    borderRadius: 20,
+    height: moderateScale(40),
+    width: moderateScale(40),
+    borderRadius: moderateScale(20),
     justifyContent: 'center',
     alignItems: 'center'
   },
@@ -44,26 +56,39 @@ export default styles = {
   },
   selectedDateModalViewText: {
     color: '#fff',
-    fontSize: 17
+    fontSize: moderateScale(17)
   },
   transactionDetailModalView: {
     backgroundColor: "white",
-    borderRadius: 4,
-    height: 250,
-    padding: 20
+    borderRadius: moderateScale(4),
+    height: verticalScale(250),
+    padding: moderateScale(20)
   },
   transactionDetailModalViewHeader: {
-    height: 30,
+    height: verticalScale(50),
     flexDirection: 'row',
-    height: 50,
     alignItems: 'center',
   },
   transactionDetailModalViewHeaderImageView: {
-    height: 32,
-    width: 32,
-    borderRadius: 16,
+    height: moderateScale(32),
+    width: moderateScale(32),
+    borderRadius: moderateScale(16),
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  transactionDetailModalViewHeaderText: {
+    fontSize: moderateScale(17)
+  },
+  transactonDetailModalViewContent: {
+    height: moderateScale(150),
+    paddingTop: moderateScale(20)
+  },
+  transactonDetailModalViewContentTypeText: {
+    flexDirection: 'row',
+    height: verticalScale(30)
+  },
+  transactonDetailModalViewContentValueText: {
+    fontSize: moderateScale(16)
   }
 
 }
