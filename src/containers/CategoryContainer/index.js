@@ -61,7 +61,8 @@ class CategoryContainer extends Component {
   }
 
   componentDidDisappear() {
-    this.animateValue()
+    this.animationValue.setValue(0)
+    this.setState({open: false, categoryFormText: ''})
     this.backHandler.remove()
 
   }
@@ -86,7 +87,8 @@ class CategoryContainer extends Component {
     }).start(finished => {
       if (finished) {
         this.setState(prevState => ({
-          open: !prevState.open
+          open: !prevState.open,
+          categoryFormText: ''
         })
         )
       }
@@ -96,8 +98,7 @@ class CategoryContainer extends Component {
   onCategoryItemClick(name, id) {
     this.animateValue()
     this.setState({ selectedCategory: name }, () => {
-      this.fetchCategoryData
-        ()
+      this.fetchCategoryData()
     })
   }
 
