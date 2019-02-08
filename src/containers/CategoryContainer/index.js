@@ -305,7 +305,7 @@ function CategoryChart({
       {
         eachCategoryData.length > 0 ?
           <View style={{}}>
-            <VictoryChart minDomain={{ y: 0 }} maxDomain={eachCategoryData}>
+            <VictoryChart minDomain={{ y: 0 }}>
               <VictoryAxis dependentAxis />
               <VictoryLine
                 style={{
