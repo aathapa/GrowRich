@@ -18,6 +18,10 @@ Navigation.events().registerAppLaunchedListener(() => {
     },
     bottomTabs: {
       titleDisplayMode: 'alwaysShow'
+    },
+    statusBar: {
+      backgroundColor: '#512DA8',
+      style: 'light'
     }
   })
   
