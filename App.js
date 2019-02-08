@@ -16,8 +16,8 @@ Navigation.events().registerAppLaunchedListener(() => {
       textColor: '#656D77',
       iconColor: '#656D77'
     },
-    statusBar: {
-      
+    bottomTabs: {
+      titleDisplayMode: 'alwaysShow'
     }
   })
   
