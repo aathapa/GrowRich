@@ -56,6 +56,24 @@ export function fetchEachCategoryData(db, vars = []) {
   )
 }
 
+export function totalIncomeExpenseAmount(db, vars = []) {
+  return select(db, `
+    SELECT transaction_type,
+      (SELECT SUM (amount)
+        FROM Transactions AS t1
+        WHERE  t1.transaction_type = T.transaction_type
+      ) total,
+      (SELECT SUM (amount)
+        FROM Transactions AS t2
+        WHERE t2.transaction_type = T.transaction_type
+      ) total
+    FROM Transactions T 
+    GROUP BY transaction_type
+  `,
+    vars
+  )
+}
+
 export function deleteTransactionItem(db, vars) {
   remove(db, `
     DELETE FROM Transactions

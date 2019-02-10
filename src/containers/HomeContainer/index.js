@@ -19,7 +19,7 @@ import { Info, Card, EmptyDataWithButton } from 'component'
 
 import { Images, Icons } from 'globalData'
 import { month } from 'helper'
-import { fetchAllTransaction, deleteTransactionItem } from '../../database/transactions.model'
+import { fetchAllTransaction, deleteTransactionItem, totalIncomeExpenseAmount } from '../../database/transactions.model'
 import styles from './style'
 
 const { height } = Dimensions.get('window')
@@ -38,7 +38,10 @@ class HomeContainer extends Component {
     selectedTransactionType: null,
     currentYear: new Date().getFullYear(),
     selectedMonth: new Date().getMonth() + 1,
-    isTransactionItemModalVisible: false
+    isTransactionItemModalVisible: false,
+    totalExpense: null,
+    totalIncome: null,
+    totalBalance: null
   }
   scrollY = new Animated.Value(0)
 
@@ -52,7 +55,11 @@ class HomeContainer extends Component {
 
   async fetchData() {
     const transactionData = await fetchAllTransaction(db)
-    this.setState({ transactionData })
+    const totalAmount = await totalIncomeExpenseAmount(db)
+    const totalExpense = totalAmount[0].total
+    const totalIncome = totalAmount[1].total
+
+    this.setState({ transactionData, totalExpense, totalIncome, totalBalance: totalIncome - totalExpense })
   }
 
   onMonthPressed(num) {
@@ -100,7 +107,16 @@ class HomeContainer extends Component {
 
 
   render() {
-    const { currentYear, transactionData, isDateModalVisible, isTransactionItemModalVisible, selectedTransactionData } = this.state
+    const {
+      currentYear,
+      transactionData,
+      isDateModalVisible,
+      isTransactionItemModalVisible,
+      selectedTransactionData,
+      totalExpense,
+      totalIncome,
+      totalBalance
+    } = this.state
     console.log(this.state.selectedMonth)
     const inputRange = [0, 20, 40, 60, 80, 100]
     const translateY = this.scrollY.interpolate({
@@ -129,6 +145,9 @@ class HomeContainer extends Component {
               translateY={translateY}
               textOpacity={textOpacity}
               balanceTextMargin={balanceTextMargin}
+              totalExpense={totalExpense}
+              totalIncome={totalIncome}
+              totalBalance={totalBalance}
             />
             <View style={{ height: height }}>
               <TransactionList
@@ -156,7 +175,7 @@ class HomeContainer extends Component {
             />
           </View>
         }
-        
+
         <DateModal
           isVisible={isDateModalVisible}
           onBackdropPress={() => this.setState({ isDateModalVisible: false })}
@@ -191,7 +210,9 @@ function TransactionTotalValue({
   translateY,
   textOpacity,
   balanceTextMargin,
-
+  totalExpense,
+  totalIncome,
+  totalBalance
 }) {
   return (
     <LineargradientAnimation style={[styles.homeContainerHeaderView, { transform: [{ translateY }], }]}
@@ -203,7 +224,7 @@ function TransactionTotalValue({
         <Animated.View style={{ transform: [{ translateY: balanceTextMargin }] }}>
 
           <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={styles.homeContainerHeaderCurrentBalanceText}>12033444</Text>
+            <Text style={styles.homeContainerHeaderCurrentBalanceText}>{totalBalance}</Text>
           </View>
         </Animated.View>
         <View>
@@ -216,7 +237,7 @@ function TransactionTotalValue({
           <Info
             iconName="arrow-down"
             type="INCOME"
-            typeAmount="12000"
+            typeAmount={totalIncome}
             iconColor="green"
             opacity={textOpacity}
           />
@@ -225,7 +246,7 @@ function TransactionTotalValue({
           <Info
             iconName="arrow-up"
             type="EXPENSE"
-            typeAmount="13000"
+            typeAmount={totalExpense}
             iconColor="red"
             opacity={textOpacity}
 
@@ -265,7 +286,7 @@ function TransactionList({
         memo={item.memo}
         color={item.color}
         image={Images}
-        onPress={()=> onPress(item)}
+        onPress={() => onPress(item)}
       />
       }
       keyExtractor={(item) => item.id}
