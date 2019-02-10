@@ -18,7 +18,7 @@ import Modal from 'react-native-modal';
 import { Info, Card, EmptyDataWithButton } from 'component'
 
 import { Images, Icons } from 'globalData'
-import { month, firstMonthDay, lastMonthDay, lastMonthDate, getCurrentFullMonthName} from 'helper'
+import { month, firstMonthDay, lastMonthDay, lastMonthDate, getCurrentFullMonthName } from 'helper'
 import { fetchAllTransaction, deleteTransactionItem, totalIncomeExpenseAmount } from '../../database/transactions.model'
 import styles from './style'
 
@@ -54,13 +54,13 @@ class HomeContainer extends Component {
     this.fetchData()
   }
 
-  async fetchData(cb = () => { }) {
+  async fetchData() {
     const { currentYear, selectedMonth } = this.state
     const lastDate = lastMonthDate(currentYear, selectedMonth)
     const vars = [firstMonthDay(currentYear, selectedMonth, 1), lastMonthDay(currentYear, selectedMonth, lastDate)]
     const transactionData = await fetchAllTransaction(db, vars)
     const totalAmount = await totalIncomeExpenseAmount(db, [firstMonthDay(currentYear, selectedMonth, 1), lastMonthDay(currentYear, selectedMonth, lastDate), firstMonthDay(currentYear, selectedMonth, 1), lastMonthDay(currentYear, selectedMonth, lastDate)])
-    
+
     const totalExpense = totalAmount[0].total
     const totalIncome = totalAmount[1].total
 
@@ -178,7 +178,7 @@ class HomeContainer extends Component {
           onArrowBackPressed={() => this.onArrowPressed('-')}
           onArrowForwardPressed={() => this.onArrowPressed('+')}
           onMonthPressed={(num, fullMonth) => this.onMonthPressed(num, fullMonth)}
-          isMonthActive={(num ) => isMonthActive(num)}
+          isMonthActive={(num) => isMonthActive(num)}
         />
 
         <TransactionDetailModalView
