@@ -18,7 +18,7 @@ import Modal from 'react-native-modal';
 import { Info, Card, EmptyDataWithButton } from 'component'
 
 import { Images, Icons } from 'globalData'
-import { month } from 'helper'
+import { month, firstMonthDay, lastMonthDay, lastMonthDate, getCurrentFullMonthName} from 'helper'
 import { fetchAllTransaction, deleteTransactionItem, totalIncomeExpenseAmount } from '../../database/transactions.model'
 import styles from './style'
 
@@ -38,6 +38,7 @@ class HomeContainer extends Component {
     selectedTransactionType: null,
     currentYear: new Date().getFullYear(),
     selectedMonth: new Date().getMonth() + 1,
+    selectedFullMonth: getCurrentFullMonthName(),
     isTransactionItemModalVisible: false,
     totalExpense: null,
     totalIncome: null,
@@ -53,34 +54,22 @@ class HomeContainer extends Component {
     this.fetchData()
   }
 
-  async fetchData() {
-    const transactionData = await fetchAllTransaction(db)
-    const totalAmount = await totalIncomeExpenseAmount(db)
+  async fetchData(cb = () => { }) {
+    const { currentYear, selectedMonth } = this.state
+    const lastDate = lastMonthDate(currentYear, selectedMonth)
+    const vars = [firstMonthDay(currentYear, selectedMonth, 1), lastMonthDay(currentYear, selectedMonth, lastDate)]
+    const transactionData = await fetchAllTransaction(db, vars)
+    const totalAmount = await totalIncomeExpenseAmount(db, [firstMonthDay(currentYear, selectedMonth, 1), lastMonthDay(currentYear, selectedMonth, lastDate), firstMonthDay(currentYear, selectedMonth, 1), lastMonthDay(currentYear, selectedMonth, lastDate)])
+    
     const totalExpense = totalAmount[0].total
     const totalIncome = totalAmount[1].total
 
     this.setState({ transactionData, totalExpense, totalIncome, totalBalance: totalIncome - totalExpense })
   }
 
-  onMonthPressed(num) {
-    const { currentYear } = this.state
-    this.setState({ selectedMonth: num })
-    const lastDate = new Date(currentYear, num, 0).getDate()
-    // console.log('First Date', firstMonthDay(currentYear, num, 1), 'Last Date', lastMonthDay(currentYear, num, lastDate))
-    let data = []
-    db.transaction(txn => {
-      txn.executeSql(`
-        SELECT * FROM Transactions
-        WHERE transaction_date BETWEEN "2019-1-1" AND "2019-2-31"
-      `, [],
-        (tx, res) => {
-          console.log(res)
-          for (let i = 0; i < res.rows.length; i++) {
-            data.push(res.rows.item(i))
-          }
-          this.setState({ transactionData: data })
-        }
-      )
+  onMonthPressed(num, fullMonth) {
+    this.setState({ selectedMonth: num, isDateModalVisible: false, selectedFullMonth: fullMonth }, () => {
+      this.fetchData()
     })
   }
 
@@ -115,9 +104,10 @@ class HomeContainer extends Component {
       selectedTransactionData,
       totalExpense,
       totalIncome,
-      totalBalance
+      totalBalance,
+      selectedMonth,
+      selectedFullMonth
     } = this.state
-    console.log(this.state.selectedMonth)
     const inputRange = [0, 20, 40, 60, 80, 100]
     const translateY = this.scrollY.interpolate({
       inputRange,
@@ -135,20 +125,30 @@ class HomeContainer extends Component {
       outputRange: [1, 0.4, 0],
     })
 
-    const isMonthActive = (value) => this.state.selectedMonth === value
+    const isMonthActive = (value) => selectedMonth === value
 
     return (
       <View style={{ height }}>
+        <TransactionTotalValue
+          translateY={translateY}
+          textOpacity={textOpacity}
+          balanceTextMargin={balanceTextMargin}
+          totalExpense={totalExpense}
+          totalIncome={totalIncome}
+          totalBalance={totalBalance}
+          selectedFullMonth={selectedFullMonth}
+          currentYear={currentYear}
+        />
+        <TouchableOpacity
+          style={styles.filterView}
+          onPress={() => this.setState({ isDateModalVisible: true })}
+        >
+          <IonIcons name={Icons.IonIcons.filter} size={25} color="#fff" />
+        </TouchableOpacity>
+
         {transactionData.length > 0 ?
           <View>
-            <TransactionTotalValue
-              translateY={translateY}
-              textOpacity={textOpacity}
-              balanceTextMargin={balanceTextMargin}
-              totalExpense={totalExpense}
-              totalIncome={totalIncome}
-              totalBalance={totalBalance}
-            />
+
             <View style={{ height: height }}>
               <TransactionList
                 transactionData={transactionData}
@@ -160,12 +160,7 @@ class HomeContainer extends Component {
                   })}
               />
             </View>
-            <TouchableOpacity
-              style={styles.filterView}
-              onPress={() => this.setState({ isDateModalVisible: true })}
-            >
-              <IonIcons name={Icons.IonIcons.filter} size={25} color="#fff" />
-            </TouchableOpacity>
+
           </View>
           : <View style={{ height, justifyContent: 'center', alignItems: 'center' }}>
             <EmptyDataWithButton
@@ -182,8 +177,8 @@ class HomeContainer extends Component {
           currentYear={currentYear}
           onArrowBackPressed={() => this.onArrowPressed('-')}
           onArrowForwardPressed={() => this.onArrowPressed('+')}
-          onMonthPressed={(num) => this.onMonthPressed(num)}
-          isMonthActive={(num) => isMonthActive(num)}
+          onMonthPressed={(num, fullMonth) => this.onMonthPressed(num, fullMonth)}
+          isMonthActive={(num ) => isMonthActive(num)}
         />
 
         <TransactionDetailModalView
@@ -212,7 +207,9 @@ function TransactionTotalValue({
   balanceTextMargin,
   totalExpense,
   totalIncome,
-  totalBalance
+  totalBalance,
+  selectedFullMonth,
+  currentYear
 }) {
   return (
     <LineargradientAnimation style={[styles.homeContainerHeaderView, { transform: [{ translateY }], }]}
@@ -228,7 +225,7 @@ function TransactionTotalValue({
           </View>
         </Animated.View>
         <View>
-          <Animated.Text style={{ color: '#fff', fontWeight: '600', opacity: textOpacity }}>September 2018</Animated.Text>
+          <Animated.Text style={{ color: '#fff', fontWeight: '600', opacity: textOpacity }}>{`${selectedFullMonth} ${currentYear}`}</Animated.Text>
         </View>
 
       </View>
@@ -347,10 +344,10 @@ function DateModal({
             </View>
           </View>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
-            {month.map(({ abbr, num }) => {
+            {month.map(({ fullMonth, abbr, num }, i) => {
               return (
                 <TouchableOpacity
-                  onPress={() => onMonthPressed(num)}
+                  onPress={() => onMonthPressed(num, fullMonth)}
                   key={abbr}
                   style={styles.dateModalMonthview}
                 >

@@ -17,7 +17,8 @@ export function createTransactionTable(db) {
 export function fetchAllTransaction(db, vars = []) {
   return select(db, `
    SELECT * FROM Transactions
-   ORDER BY position DESC
+   WHERE transaction_date BETWEEN ? AND ?
+   ORDER BY position DESC 
   `, vars
   );
 }
@@ -58,14 +59,14 @@ export function fetchEachCategoryData(db, vars = []) {
 
 export function totalIncomeExpenseAmount(db, vars = []) {
   return select(db, `
-    SELECT transaction_type,
+    SELECT transaction_type,transaction_date,
       (SELECT SUM (amount)
         FROM Transactions AS t1
-        WHERE  t1.transaction_type = T.transaction_type
+        WHERE  t1.transaction_type = T.transaction_type AND transaction_date BETWEEN ? AND ?
       ) total,
       (SELECT SUM (amount)
         FROM Transactions AS t2
-        WHERE t2.transaction_type = T.transaction_type
+        WHERE t2.transaction_type = T.transaction_type AND transaction_date BETWEEN ? AND ?
       ) total
     FROM Transactions T 
     GROUP BY transaction_type
