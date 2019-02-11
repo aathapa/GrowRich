@@ -19,7 +19,7 @@ import { Info, Card, EmptyDataWithButton } from 'component'
 
 import { Images, Icons } from 'globalData'
 import { month, firstMonthDay, lastMonthDay, lastMonthDate, getCurrentFullMonthName } from 'helper'
-import { fetchAllTransaction, deleteTransactionItem, totalIncomeExpenseAmount } from '../../database/transactions.model'
+import { fetchAllTransaction, deleteTransactionItem } from '../../database/transactions.model'
 import styles from './style'
 
 const { height } = Dimensions.get('window')
@@ -59,12 +59,15 @@ class HomeContainer extends Component {
     const lastDate = lastMonthDate(currentYear, selectedMonth)
     const vars = [firstMonthDay(currentYear, selectedMonth, 1), lastMonthDay(currentYear, selectedMonth, lastDate)]
     const transactionData = await fetchAllTransaction(db, vars)
-    const totalAmount = await totalIncomeExpenseAmount(db, [firstMonthDay(currentYear, selectedMonth, 1), lastMonthDay(currentYear, selectedMonth, lastDate), firstMonthDay(currentYear, selectedMonth, 1), lastMonthDay(currentYear, selectedMonth, lastDate)])
 
-    const totalExpense = totalAmount[0].total
-    const totalIncome = totalAmount[1].total
+    const totalExpense = this.calculateTotal(transactionData, 'Expense')
+    const totalIncome = this.calculateTotal(transactionData, 'Income')
 
     this.setState({ transactionData, totalExpense, totalIncome, totalBalance: totalIncome - totalExpense })
+  }
+
+  calculateTotal(data = [], type) {
+    return data.filter(t => t.transaction_type === type).reduce((acc, ele) => (acc + ele.amount), 0)
   }
 
   onMonthPressed(num, fullMonth) {
@@ -139,13 +142,6 @@ class HomeContainer extends Component {
           selectedFullMonth={selectedFullMonth}
           currentYear={currentYear}
         />
-        <TouchableOpacity
-          style={styles.filterView}
-          onPress={() => this.setState({ isDateModalVisible: true })}
-        >
-          <IonIcons name={Icons.IonIcons.filter} size={25} color="#fff" />
-        </TouchableOpacity>
-
         {transactionData.length > 0 ?
           <View>
 
@@ -187,7 +183,12 @@ class HomeContainer extends Component {
           data={selectedTransactionData}
           onDeletePressed={() => this.onDeletePressed()}
         />
-
+        <TouchableOpacity
+          style={styles.filterView}
+          onPress={() => this.setState({ isDateModalVisible: true })}
+        >
+          <IonIcons name={Icons.IonIcons.filter} size={25} color="#fff" />
+        </TouchableOpacity>
       </View>
     );
   }
