@@ -3,47 +3,41 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Animated
+  Platform
 } from 'react-native'
 
 import LinearGradient from 'react-native-linear-gradient'
-
-import SimpleLineIcon from 'react-native-vector-icons/SimpleLineIcons'
-
+import IonIcons from 'react-native-vector-icons/Ionicons'
+import { Icons } from 'globalData'
 
 export function TopBar({
   onPress,
-  rotate,
-  activeMenu,
-  children
+  iconName,
+  title
 }) {
   return (
     <LinearGradient
-      style={{ height: 70, justifyContent: 'center', alignItems: 'center', }}
+      style={{ height: Platform.OS === 'android' ? 60 : 70, justifyContent: 'center', alignItems: 'center',paddingTop: 15, }}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 0 }}
       colors={['#8B4FCB', '#5B3BB4']}
     >
-      <View style={{flex: 1}}/>
-      <View style={{ flex: 3, justifyContent: 'center', alignItems: 'center' }}>
-        <TouchableOpacity onPress={onPress} style={{ flexDirection: 'row', marginTop: 15, }}>
-          <View
-
+      <View style={{ flexDirection: 'row' }}>
+        <View style={{ flex: 1 }} />
+        <View style={{ flex: 3, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ fontSize: 20, color: '#fff' }}>{title}</Text>
+        </View>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <TouchableOpacity
+            style={{ flex: 1 }}
+            onPress={onPress}
           >
-            <Text style={{ fontSize: 20, color: '#fff' }}>{activeMenu}</Text>
-          </View>
+            <IonIcons name={iconName} color="#fff" size={25} />
+          </TouchableOpacity>
+        </View>
+      </View>
 
-          <Animated.View style={{ marginLeft: 10, transform: [{ rotate }] }}>
-            <SimpleLineIcon name="arrow-down" size={15} color="#fff" />
-          </Animated.View>
-        </TouchableOpacity>
-      </View>
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-        <TouchableOpacity>
-          {children}
-        </TouchableOpacity>
-      </View>
-      
+
 
     </LinearGradient>
   )
