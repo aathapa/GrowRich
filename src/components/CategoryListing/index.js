@@ -30,10 +30,10 @@ export function CategoryListing({
           <TouchableOpacity
             onPress={() => onPress(name)}
             key={id} style={{ height: 80, width: (width / 4) - 5, justifyContent: 'center', alignItems: 'center' }}>
-            <View style={{ backgroundColor: exactColor, justifyContent: 'center', alignItems: 'center', height: 46, width: 46, borderRadius: 23 }}>
+            <View style={{ backgroundColor: exactColor, justifyContent: 'center', alignItems: 'center', height: 44, width: 44, borderRadius: 22 }}>
               <Image
                 source={images[name]}
-                style={{ height: 30, width: 30 }}
+                style={{ height: 25, width: 25 }}
               />
             </View>
             <Text style={{ fontSize: 12 }}>{name}</Text>
