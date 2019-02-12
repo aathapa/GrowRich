@@ -271,7 +271,7 @@ function CategoryModal({
     >
       <View style={styles.categoryModalview}>
         <TouchableOpacity
-          style={{ flex: 1, justifyContent: 'center', padding: 15 }}
+          style={{ flex: 1,}}
           onPress={onExpensePressed}
         >
           <Text style={{ color: '#fff', fontSize: 18 }}>Expense</Text>
@@ -279,7 +279,7 @@ function CategoryModal({
 
         <TouchableOpacity
           onPress={onIncomePressed}
-          style={{ flex: 1, padding: 15 }}
+          style={{ flex: 1, }}
         >
           <Text style={{ color: '#fff', fontSize: 18 }}>Income</Text>
         </TouchableOpacity>
