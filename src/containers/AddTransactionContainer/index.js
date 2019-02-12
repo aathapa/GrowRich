@@ -7,23 +7,24 @@ import {
   TouchableOpacity,
 } from 'react-native'
 import { Navigation } from 'react-native-navigation'
-import LinearGradient from 'react-native-linear-gradient';
-import { Button, Input } from 'react-native-elements'
+import { Button } from 'react-native-elements'
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons'
 import { openDatabase } from 'react-native-sqlite-storage'
 import uuid from 'uuid/v4'
+import Modal from 'react-native-modal'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
-import { CategoryListing, Form, TopBar} from 'component'
+import { CategoryListing, Form, TopBar } from 'component'
 
 import { formatDate } from 'helper'
 
 import { insertDataInTransaction, fetchCategoryData } from '../../database'
-import { Images } from 'globalData'
+import { Images, Icons } from 'globalData'
+import styles from './styles'
 
 
-const { width, height } = Dimensions.get('window')
+const { height } = Dimensions.get('window')
 const db = openDatabase({ name: 'Expense.db' })
 
 const colors = ['#F25365', '#FFCE6A', '#FF6C58', '#43C1E4', '#AD94E5', '#569EE6']
@@ -42,7 +43,6 @@ class AddTransactionContainer extends Component {
     memo: ''
   }
 
-  rotateValue = new Animated.Value(0)
   categoryHeightValue = new Animated.Value(0)
 
   componentDidMount() {
@@ -76,25 +76,22 @@ class AddTransactionContainer extends Component {
     this.setState({ amount: '', memo: '' })
   }
 
-  onClickMenu(type) {
-    this.setState({ currentActiveMenu: type, open: false, }, () => {
-      this.fetchData(this.state.currentActiveMenu)
-      this.rotateValue.setValue(0)
-      this.categoryHeightValue.setValue(0)
-    })
-  }
-
   onTopbarHeadingPressed = () => {
-    const toValue = this.state.open ? 0 : 1
-    Animated.timing(this.rotateValue, {
-      toValue,
-      duration: 100,
-      useNativeDriver: true
-    }).start()
     this.setState(prevstate => ({
       open: !prevstate.open
     }))
 
+  }
+
+  onClickMenu(type) {
+    this.setState({ currentActiveMenu: type, open: false, }, () => {
+      this.fetchData(this.state.currentActiveMenu)
+      this.categoryHeightValue.setValue(0)
+    })
+  }
+
+  onChangeText = (type, value) => {
+    this.setState({ [type]: value })
   }
 
   animatedCategoryHeight() {
@@ -105,22 +102,18 @@ class AddTransactionContainer extends Component {
   }
 
   render() {
-    const rotate = this.rotateValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: ['0deg', '180deg']
-    })
-
+    const { amount, memo, currentDate, selectedCategoryItem } = this.state;
     const categoryHeight = this.categoryHeightValue.interpolate({
       inputRange: [0, 1],
       outputRange: [height, 0]
     })
 
     return (
-      <View style={{height}}>
+      <View style={{ height }}>
         <TopBar
           onPress={this.onTopbarHeadingPressed}
-          rotate={rotate}
-          activeMenu={this.state.currentActiveMenu}
+          iconName={Icons.IonIcons.filter}
+          title={this.state.currentActiveMenu}
         />
         <Animated.View style={{ height: categoryHeight }}>
           <CategoryListing
@@ -133,84 +126,21 @@ class AddTransactionContainer extends Component {
           />
         </Animated.View>
 
-        <KeyboardAwareScrollView
-          extraScrollHeight={50}
-          enableOnAndroid
-        >
-          <View style={{ marginHorizontal: 15, marginTop: 15 }}>
-            <View style={{ borderBottomWidth: 0.7, borderBottomColor: '#5B3BB4' }}>
-              <View>
-                <Text style={{ color: '#757575' }}>Category</Text>
-              </View>
-              <View style={{ paddingTop: 10, height: 40 }}>
-                <TouchableOpacity onPress={() => this.categoryHeightValue.setValue(0)}>
-                  <View style={{ flexDirection: 'row' }}>
-                    <View style={{ flex: 1 }}>
-                      <SimpleLineIcons name="grid" size={20} color="#616161" />
-                    </View>
-                    <View style={{ flex: 10 }}>
-                      <Text style={{ fontSize: 17, color: '#424242' }}>{this.state.selectedCategoryItem}</Text>
-                    </View>
-
-                  </View>
-                </TouchableOpacity>
-              </View>
-
-            </View>
-            <View style={{ borderBottomWidth: 0.7, borderBottomColor: '#5B3BB4', paddingTop: 20 }}>
-              <View>
-                <Text style={{ color: '#757575' }}>Date</Text>
-              </View>
-              <View style={{ paddingTop: 10, height: 40 }}>
-                <TouchableOpacity onPress={() => this.setState({ isDateTimePickerVisible: true })}>
-                  <View style={{ flexDirection: 'row' }}>
-                    <View style={{ flex: 1 }}>
-                      <SimpleLineIcons name="calendar" size={20} color="#616161" />
-                    </View>
-                    <View style={{ flex: 10 }}>
-                      <Text style={{ fontSize: 17, color: '#424242' }}>{this.state.currentDate}</Text>
-                    </View>
-
-                  </View>
-                </TouchableOpacity>
-              </View>
-
-            </View>
-
-            <Form
-              iconName="grid"
-              label="Amount"
-              placeholder="Amount"
-              value={this.state.amount}
-              onChangeText={(amount) => this.setState({ amount })}
-              keyboardType="numeric"
-            />
-
-            <Form
-              iconName="notebook"
-              label="Memo"
-              placeholder="Memo"
-              value={this.state.memo}
-              onChangeText={(memo) => this.setState({ memo })}
-            />
-
-            <View style={{ marginTop: 20 }}>
-              <Button
-                title="Add"
-                backgroundColor="#9DD377"
-                onPress={() => this.insertData()}
-              />
-            </View>
-          </View>
-        </KeyboardAwareScrollView>
-
-
-
-
-        <MenuItem
+        <CategoryForm
+          memo={memo}
+          amount={amount}
+          selectedCategoryItem={selectedCategoryItem}
+          dateTimePickerVisible={() => this.setState({ isDateTimePickerVisible: true })}
+          currentDate={currentDate}
+          onChangeText={this.onChangeText}
+          onButtonPress={() => this.insertData()}
+          onPress={() => this.categoryHeightValue.setValue(0)}
+        />
+        <CategoryModal
           open={this.state.open}
           onExpensePressed={() => this.onClickMenu('Expense')}
           onIncomePressed={() => this.onClickMenu('Income')}
+          onBackdropPress={() => this.setState({ open: false })}
         />
 
         <DateTimePicker
@@ -225,34 +155,138 @@ class AddTransactionContainer extends Component {
 
 }
 
-function MenuItem({
+/**
+  ---------------------------
+
+        Category Form
+        
+  ---------------------------
+ */
+
+function CategoryForm({
+  selectedCategoryItem,
+  onChangeText,
+  memo,
+  amount,
+  currentDate,
+  dateTimePickerVisible,
+  onButtonPress,
+  onPress
+}) {
+  return (
+    <KeyboardAwareScrollView
+      extraScrollHeight={50}
+      enableOnAndroid
+    >
+      <View style={{ marginHorizontal: 15, marginTop: 15 }}>
+        <View style={{ borderBottomWidth: 0.7, borderBottomColor: '#5B3BB4' }}>
+          <View>
+            <Text style={{ color: '#757575' }}>Category</Text>
+          </View>
+          <View style={{ paddingTop: 10, height: 40 }}>
+            <TouchableOpacity onPress={onPress}>
+              <View style={{ flexDirection: 'row' }}>
+                <View style={{ flex: 1 }}>
+                  <SimpleLineIcons name="grid" size={20} color="#616161" />
+                </View>
+                <View style={{ flex: 10 }}>
+                  <Text style={{ fontSize: 17, color: '#424242' }}>{selectedCategoryItem}</Text>
+                </View>
+
+              </View>
+            </TouchableOpacity>
+          </View>
+
+        </View>
+        <View style={{ borderBottomWidth: 0.7, borderBottomColor: '#5B3BB4', paddingTop: 20 }}>
+          <View>
+            <Text style={{ color: '#757575' }}>Date</Text>
+          </View>
+          <View style={{ paddingTop: 10, height: 40 }}>
+            <TouchableOpacity onPress={dateTimePickerVisible}>
+              <View style={{ flexDirection: 'row' }}>
+                <View style={{ flex: 1 }}>
+                  <SimpleLineIcons name="calendar" size={20} color="#616161" />
+                </View>
+                <View style={{ flex: 10 }}>
+                  <Text style={{ fontSize: 17, color: '#424242' }}>{currentDate}</Text>
+                </View>
+
+              </View>
+            </TouchableOpacity>
+          </View>
+
+        </View>
+
+        <Form
+          iconName="grid"
+          label="Amount"
+          placeholder="Amount"
+          value={amount}
+          onChangeText={(amount) => onChangeText('amount', amount)}
+          keyboardType="numeric"
+        />
+
+        <Form
+          iconName="notebook"
+          label="Memo"
+          placeholder="Memo"
+          value={memo}
+          onChangeText={(memo) => onChangeText('memo', memo)}
+        />
+
+        <View style={{ marginTop: 20 }}>
+          <Button
+            title="Add"
+            backgroundColor="#9DD377"
+            onPress={onButtonPress}
+          />
+        </View>
+      </View>
+    </KeyboardAwareScrollView>
+  )
+}
+
+/**
+  ---------------------------
+
+        Category Modal
+
+  ---------------------------
+ */
+
+function CategoryModal({
   open,
   onExpensePressed,
-  onIncomePressed
+  onIncomePressed,
+  onBackdropPress
 }) {
-  const menuItem = open ? <LinearGradient
-    // start={{ x: 0, y: 0 }}
-    // end={{ x: 1, y: 0 }}
-    colors={['#8B4FCB', '#5B3BB4']}
-    style={{ position: 'absolute', top: 70, left: (width / 2) - 50, height: 80, width: 150 }}
-  >
-    <TouchableOpacity
-      style={{ flex: 1, justifyContent: 'center', paddingLeft: 15 }}
-      onPress={onExpensePressed}
+  return (
+    <Modal
+      isVisible={open}
+      style={{ justifyContent: 'flex-end', margin: 0 }}
+      animationInTiming={50}
+      onBackdropPress={onBackdropPress}
+      backdropOpacity={0.8}
     >
-      <Text style={{ color: '#fff', fontSize: 16 }}>Expense</Text>
-    </TouchableOpacity>
+      <View style={styles.categoryModalview}>
+        <TouchableOpacity
+          style={{ flex: 1, justifyContent: 'center', padding: 15 }}
+          onPress={onExpensePressed}
+        >
+          <Text style={{ color: '#fff', fontSize: 18 }}>Expense</Text>
+        </TouchableOpacity>
 
-    <TouchableOpacity
-      onPress={onIncomePressed}
-      style={{ flex: 1, paddingLeft: 15 }}
-    >
-      <Text style={{ color: '#fff', fontSize: 16 }}>Income</Text>
-    </TouchableOpacity>
+        <TouchableOpacity
+          onPress={onIncomePressed}
+          style={{ flex: 1, padding: 15 }}
+        >
+          <Text style={{ color: '#fff', fontSize: 18 }}>Income</Text>
+        </TouchableOpacity>
+      </View>
 
-  </LinearGradient> : null
-
-  return menuItem
+    </Modal>
+  )
 }
 
 export default AddTransactionContainer

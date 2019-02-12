@@ -15,7 +15,7 @@ import IonIcons from 'react-native-vector-icons/Ionicons'
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import Modal from 'react-native-modal';
 
-import { Info, Card, EmptyDataWithButton } from 'component'
+import { Info, Card, EmptyDataWithButton, YearMonthModal } from 'component'
 
 import { Images, Icons } from 'globalData'
 import { month, firstMonthDay, lastMonthDay, lastMonthDate, getCurrentFullMonthName } from 'helper'
@@ -167,8 +167,9 @@ class HomeContainer extends Component {
           </View>
         }
 
-        <DateModal
+        <YearMonthModal
           isVisible={isDateModalVisible}
+          data={month}
           onBackdropPress={() => this.setState({ isDateModalVisible: false })}
           currentYear={currentYear}
           onArrowBackPressed={() => this.onArrowPressed('-')}
@@ -295,75 +296,8 @@ function TransactionList({
         )
       }
       scrollEventThrottle={10}
+      showsVerticalScrollIndicator={false}
     />
-  )
-}
-
-
-
-/**
-  --------------------------------
-
-            Date Modal
-
-  --------------------------------              
-*/
-
-function DateModal({
-  isVisible,
-  onBackdropPress,
-  onArrowBackPressed,
-  onArrowForwardPressed,
-  isMonthActive,
-  currentYear,
-  onMonthPressed
-}) {
-  return (
-    <Modal
-      isVisible={isVisible}
-      style={{ justifyContent: 'flex-end', margin: 0 }}
-      animationInTiming={50}
-      onBackdropPress={onBackdropPress}
-      backdropOpacity={0.8}
-    >
-      <View style={styles.modalMainView}>
-        <View>
-          <View>
-            <View style={{ flexDirection: 'row' }}>
-              <TouchableOpacity style={{ flex: 1 }} onPress={onArrowBackPressed}>
-                <IonIcons name={Icons.IonIcons.arrowBack} size={20} color="#000" />
-              </TouchableOpacity>
-              <View style={{ flex: 3, alignItems: 'center' }}>
-                <Text>{currentYear}</Text>
-              </View>
-              <TouchableOpacity
-                style={{ flex: 1, alignItems: 'flex-end' }}
-                onPress={onArrowForwardPressed}
-              >
-                <IonIcons name={Icons.IonIcons.arrowForward} size={20} color="#000" />
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
-            {month.map(({ fullMonth, abbr, num }, i) => {
-              return (
-                <TouchableOpacity
-                  onPress={() => onMonthPressed(num, fullMonth)}
-                  key={abbr}
-                  style={styles.dateModalMonthview}
-                >
-                  <View style={[styles.dateModalView, isMonthActive(num) ? styles.selectedDateModalView : null]}>
-                    <Text style={[{ fontSize: 17 }, isMonthActive(num) ? styles.selectedDateModalViewText : null]}>{abbr}</Text>
-                  </View>
-
-                </TouchableOpacity>
-              )
-            })}
-          </View>
-        </View>
-      </View>
-
-    </Modal>
   )
 }
 

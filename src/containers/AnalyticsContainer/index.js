@@ -4,7 +4,8 @@ import {
   Text,
   Dimensions,
   FlatList,
-  Image
+  Image,
+  TouchableOpacity
 } from 'react-native'
 import { sumBy } from 'lodash'
 import { VictoryPie, VictoryLegend } from 'victory-native'
@@ -15,8 +16,9 @@ import IonIcons from 'react-native-vector-icons/Ionicons'
 
 import { fetchGroupByData } from '../../database'
 
-import { TopBar, EmptyDataWithButton } from 'component'
+import { TopBar, EmptyDataWithButton, YearMonthModal } from 'component'
 import { Icons, Images } from 'globalData'
+import { firstMonthDay, lastMonthDay, lastMonthDate, getCurrentFullMonthName, month } from 'helper'
 import styles from './styles'
 
 const db = openDatabase({ name: 'Expense.db' })
@@ -28,8 +30,12 @@ class AnalyticsContainer extends Component {
 
   state = {
     categoryData: [],
+    currentYear: new Date().getFullYear(),
+    selectedMonth: new Date().getMonth() + 1,
+    selectedFullMonth: getCurrentFullMonthName(),
     transactionType: 'Expense',
-    totalAmount: null
+    totalAmount: null,
+    isDateModalVisible: false,
   }
 
   componentDidMount() {
@@ -37,17 +43,32 @@ class AnalyticsContainer extends Component {
   }
 
   componentDidAppear() {
-    this.fetchData(this.state.transactionType)
+    this.fetchData()
   }
 
-  async fetchData(type) {
+  async fetchData() {
+    const { currentYear, selectedMonth, transactionType } = this.state
+    const lastDate = lastMonthDate(currentYear, selectedMonth)
+    const vars = [transactionType, firstMonthDay(currentYear, selectedMonth, 1), lastMonthDay(currentYear, selectedMonth, lastDate)]
     try {
-      const categoryData = await fetchGroupByData(db, vars = [type])
+      const categoryData = await fetchGroupByData(db, vars)
       this.setState({ categoryData, totalAmount: sumBy(categoryData, 'y') })
     }
     catch (e) {
       alert(e)
     }
+  }
+
+  onArrowPressed(type) {
+    this.setState(prevState => ({
+      currentYear: type === '+' ? prevState.currentYear + 1 : prevState.currentYear - 1
+    }))
+  }
+
+  onMonthPressed(num, fullMonth) {
+    this.setState({ selectedMonth: num, isDateModalVisible: false, selectedFullMonth: fullMonth }, () => {
+      this.fetchData()
+    })
   }
 
   chartData() {
@@ -76,10 +97,15 @@ class AnalyticsContainer extends Component {
     )
   }
 
-  renderItem({ x, y, c }) {
+  onClickType(type) {
+    this.setState({ transactionType: type }, () => this.fetchData())
+
+  }
+
+  renderItem = ({ x, y, c }) => {
 
     return (
-      <View style={{ flex: 1, flexDirection: 'row', paddingTop: 20 }}>
+      <View style={{ flexDirection: 'row', paddingTop: 20 }}>
         <View style={{ flex: 1, }}>
           <View style={{ backgroundColor: c, height: 26, width: 26, borderRadius: 13, justifyContent: 'center', alignItems: 'center' }}>
             <Image
@@ -112,68 +138,167 @@ class AnalyticsContainer extends Component {
   }
 
   render() {
-    const { categoryData } = this.state
+    const { categoryData, selectedMonth, isDateModalVisible, currentYear, transactionType } = this.state
+    const isMonthActive = (value) => selectedMonth === value
+    const activeType = (value) => transactionType === value
     return (
-      <View style={{ backgroundColor: '#EEEEEE', height, }}>
-        {categoryData.length > 0 ? <View style={{ marginHorizontal: 15 }}>
-          {/* <TopBar>
-          <IonIcons name={Icons.filter} size={25} color="#fff" />
-        </TopBar> */}
-          <View style={styles.chartView}>
-            <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-              <Svg width={width} height={200}>
-                <VictoryLegend x={190} y={50}
-                  standalone={false}
-                  centerTitle
-                  labels={(d) => d.name}
-                  style={{ title: { fontSize: 20 } }}
-                  orientation="vertical"
-                  data={this.renderLabels()}
-                  colorScale={colors}
-                />
-
-                <VictoryPie
-                  data={this.chartData()}
-                  width={200} height={200}
-                  padAngle={2}
-                  innerRadius={10}
-                  labels={() => null}
-                  colorScale={colors}
-                />
-              </Svg>
-
-            </View>
-
-          </View>
-
-          <View style={styles.categoryWiseListView}>
+      <View style={{ backgroundColor: '#EEEEEE' }}>
+        <TopBar
+          title={transactionType}
+          iconName={Icons.IonIcons.filter}
+          onPress={() => this.setState({ isDateModalVisible: true })}
+        />
+        <View style={{ margin: 15, }}>
+          <TransactionTypeButton
+            onExpensePress={() => this.onClickType('Expense')}
+            onIncomePress={() => this.onClickType('Income')}
+            activeType={(value) => activeType(value)}
+          />
+          {categoryData.length > 0 ?
             <View>
-              <Text>{this.state.transactionType} List</Text>
+              <TransactionTypeCharts
+                chartData={this.chartData()}
+                labelData={this.renderLabels()}
+              />
+              <CategoryWiseData
+                renderItem={this.renderItem}
+                categoryData={categoryData}
+                transactionType={transactionType}
+              />
             </View>
-            <View>
-              <FlatList
-                data={this.state.categoryData}
-                renderItem={({ item }) => this.renderItem(item)}
-                keyExtractor={(item) => item.x}
+            : <View style={{ justifyContent: 'center', alignItems: 'center', height, }}>
+              <EmptyDataWithButton
+                title="Data Empty"
+                buttonTitle="Add Transactions"
+                onPress={() => this.switchToTab()}
               />
             </View>
 
-          </View>
+          }
         </View>
-          : <View style={{ justifyContent: 'center', alignItems: 'center', height, backgroundColor: '#fff' }}>
-            <EmptyDataWithButton
-              title="Data Empty"
-              buttonTitle="Add Transactions"
-              onPress={() => this.switchToTab()}
-            />
-          </View>
-
-        }
 
 
+        <YearMonthModal
+          isVisible={isDateModalVisible}
+          data={month}
+          onBackdropPress={() => this.setState({ isDateModalVisible: false })}
+          currentYear={currentYear}
+          onArrowBackPressed={() => this.onArrowPressed('-')}
+          onArrowForwardPressed={() => this.onArrowPressed('+')}
+          onMonthPressed={(num, fullMonth) => this.onMonthPressed(num, fullMonth)}
+          isMonthActive={(num) => isMonthActive(num)}
+        />
       </View>
     )
   }
 }
 
-export default AnalyticsContainer 
+/**
+  ------------------------------------------
+
+      Button that change transaction Type
+
+  ------------------------------------------
+ */
+
+function TransactionTypeButton({
+  onIncomePress,
+  onExpensePress,
+  activeType
+}) {
+  return (
+    <View>
+      <View style={{ flexDirection: 'row', height: 35, paddingHorizontal: 20, }}>
+        <TouchableOpacity
+          onPress={onExpensePress}
+          style={[styles.transactiontypeView, activeType('Expense') ? styles.selectedTransactionTypeView : null]}
+        >
+          <Text style={[styles.transactionTypeText, activeType('Expense') ? styles.selectedTransactionTypeText : null]}>Expense</Text>
+        </TouchableOpacity>
+        <View style={{ flex: 1 }} />
+        <TouchableOpacity
+          onPress={onIncomePress}
+          style={[styles.transactiontypeView, activeType('Income') ? styles.selectedTransactionTypeView : null]}>
+          <Text style={[styles.transactionTypeText, activeType('Income') ? styles.selectedTransactionTypeText : null]}>Income</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+
+  )
+}
+
+/**
+  ---------------------
+
+        Charts
+
+  ----------------------
+ */
+
+function TransactionTypeCharts({
+  chartData,
+  labelData,
+
+}) {
+  return (
+    <View style={styles.chartView}>
+      <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <Svg width={width} height={180}>
+          <VictoryLegend x={190} y={20}
+            standalone={false}
+            centerTitle
+            labels={(d) => d.name}
+            style={{ title: { fontSize: 20 } }}
+            orientation="vertical"
+            data={labelData}
+            colorScale={colors}
+          />
+
+          <VictoryPie
+            data={chartData}
+            width={210} height={210}
+            padAngle={2}
+            innerRadius={10}
+            labels={() => null}
+            colorScale={colors}
+          />
+        </Svg>
+
+      </View>
+    </View>
+
+  )
+}
+
+/**
+  ----------------------------------
+
+      List of category wise data
+
+  ----------------------------------
+ */
+
+function CategoryWiseData({
+  transactionType,
+  categoryData,
+  renderItem
+}) {
+  return (
+    <View style={styles.categoryWiseListView}>
+      <View>
+        <Text>{transactionType} List</Text>
+      </View>
+      <View>
+        <FlatList
+          data={categoryData}
+          renderItem={({ item }) => renderItem(item)}
+          keyExtractor={(item) => item.x}
+          showsVerticalScrollIndicator={false}
+        />
+      </View>
+
+    </View>
+  )
+}
+
+export default AnalyticsContainer   
