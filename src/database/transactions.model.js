@@ -40,7 +40,7 @@ export function fetchGroupByData(db, vars) {
       sum(amount) y,
       color c
       FROM Transactions
-      WHERE transaction_type=?
+      WHERE transaction_type=? AND transaction_date BETWEEN ? AND ?
       GROUP BY category
       ORDER BY y DESC
   `,
