@@ -36,10 +36,6 @@ Navigation.events().registerAppLaunchedListener(() => {
                 visible: false,
                 drawBehind: true
               },
-              statusBar: {
-                backgroundColor: '#1A237E',
-                style: 'light'
-              }
             }
           }
         }],
