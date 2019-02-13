@@ -8,6 +8,8 @@ import {
 
 import { Colors } from '../../globalData/'
 
+import styles from './style'
+
 export function Card({
   category,
   amount,
@@ -21,36 +23,23 @@ export function Card({
   const textColor = type.toUpperCase() === 'EXPENSE' ? Colors.expenseColor : Colors.incomeColor
   const symbol = type.toUpperCase() === 'EXPENSE' ? '-' : '+'
   return (
-    <TouchableOpacity onPress={onPress} style={{ paddingBottom: 15 }}>
-      <View style={{
-        backgroundColor: '#fff',
-        height: 60,
-        borderColor: '#eeee',
-        marginHorizontal: 15,
-        borderWidth: 1,
-        borderRadius: 10,
-        shadowColor: '#000',
-        shadowOffset: {
-          height: 1,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 1,
-        flexDirection: 'row'
-      }}>
+
+    <TouchableOpacity onPress={onPress} style={{ paddingBottom: 10 }}>
+      <View style={styles.cardView}>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <View style={{ backgroundColor: color, height: 40, width: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center' }}>
+          <View style={[styles.cardImageView, { backgroundColor: color, }]}>
             <Image
               source={image[category]}
-              style={{width: 20, height: 20}}
+              style={styles.image}
             />
           </View>
         </View>
         <View style={{ flex: 2, justifyContent: 'center', }}>
-          <Text style={{ fontSize: 17, color: Colors.cardHeadingColor }}>{memo ? memo : category}</Text>
+          <Text style={[styles.cardFont, { color: Colors.cardHeadingColor }]}>{memo ? memo : category}</Text>
           <Text style={{ color: Colors.dateColorOnWhitebackground, marginTop: 5 }}>{date}</Text>
         </View>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginRight: 10 }}>
-          <Text style={{ color: textColor , fontSize: 17 }}>{symbol}{amount}</Text>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={[styles.cardFont, { color: textColor }]}>{symbol}{amount}</Text>
         </View>
       </View>
     </TouchableOpacity>

@@ -10,7 +10,7 @@ export function Info({
   opacity
 }) {
   return (
-    <Animated.View style={{flex: 1, opacity,}}>
+    <Animated.View style={{ flex: 1, opacity }}>
       <View style={{ flex: 1, flexDirection: 'row', }}>
         <View style={{ flex: 1 }}>
           <View style={{ backgroundColor: '#fff', elevation: 1, height: 20, width: 20, borderRadius: 20, justifyContent: 'center', alignItems: 'center' }}>
@@ -18,8 +18,8 @@ export function Info({
           </View>
         </View>
         <View style={{ flex: 4 }}>
-          <Animated.Text style={{ color: '#fff'}}>{type}</Animated.Text>
-          <Animated.Text style={{ color: '#fff', fontWeight: '600', fontSize: 20}}>{typeAmount}</Animated.Text>
+          <Animated.Text style={{ color: '#fff' }}>{type}</Animated.Text>
+          <Animated.Text style={{ color: '#fff', fontWeight: '600', fontSize: 20 }}>{typeAmount}</Animated.Text>
         </View>
       </View>
 

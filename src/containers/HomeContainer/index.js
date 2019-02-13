@@ -231,8 +231,8 @@ function TransactionTotalValue({
         </View>
 
       </View>
-      <View style={{ flex: 1, flexDirection: 'row', marginHorizontal: 15, alignItems: 'center' }}>
-        <View style={{ flex: 2, }}>
+      <View style={{ flex: 1, flexDirection: 'row', marginHorizontal: 15, }}>
+        <View style={{ flex: 3, }}>
           <Info
             iconName="arrow-down"
             type="INCOME"
@@ -241,7 +241,8 @@ function TransactionTotalValue({
             opacity={textOpacity}
           />
         </View>
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1 }} />
+        <View style={{ flex: 2 }}>
           <Info
             iconName="arrow-up"
             type="EXPENSE"
@@ -251,8 +252,6 @@ function TransactionTotalValue({
 
           />
         </View>
-
-
       </View>
     </LineargradientAnimation>
   )

@@ -5,7 +5,8 @@ import {
   Dimensions,
   FlatList,
   Image,
-  TouchableOpacity
+  TouchableOpacity,
+  ScrollView
 } from 'react-native'
 import { sumBy } from 'lodash'
 import { VictoryPie, VictoryLegend } from 'victory-native'
@@ -105,22 +106,22 @@ class AnalyticsContainer extends Component {
   renderItem = ({ x, y, c }) => {
 
     return (
-      <View style={{ flexDirection: 'row', paddingTop: 20 }}>
+      <View style={{ flexDirection: 'row', paddingTop: 15 }}>
         <View style={{ flex: 1, }}>
-          <View style={{ backgroundColor: c, height: 26, width: 26, borderRadius: 13, justifyContent: 'center', alignItems: 'center' }}>
+          <View style={[styles.imageView, { backgroundColor: c }]}>
             <Image
               source={Images[x]}
-              style={{ height: 15, width: 15 }}
+              style={styles.image}
             />
           </View>
 
         </View>
         <View style={{ flex: 6, flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: '#ccc' }}>
           <View style={{ flex: 2 }}>
-            <Text>{x}</Text>
+            <Text style={styles.listItemText}>{x}</Text>
           </View>
           <View style={{ flex: 1, alignItems: 'flex-end' }}>
-            <Text>{y}</Text>
+            <Text style={styles.listItemText}>{y}</Text>
           </View>
         </View>
 
@@ -142,40 +143,44 @@ class AnalyticsContainer extends Component {
     const isMonthActive = (value) => selectedMonth === value
     const activeType = (value) => transactionType === value
     return (
-      <View style={{ backgroundColor: '#EEEEEE' }}>
+      <View style={{ backgroundColor: '#EEEEEE', flex: 1 }}>
         <TopBar
           title={transactionType}
           iconName={Icons.IonIcons.filter}
           onPress={() => this.setState({ isDateModalVisible: true })}
         />
-        <View style={{ margin: 15, }}>
-          <TransactionTypeButton
-            onExpensePress={() => this.onClickType('Expense')}
-            onIncomePress={() => this.onClickType('Income')}
-            activeType={(value) => activeType(value)}
-          />
-          {categoryData.length > 0 ?
-            <View>
-              <TransactionTypeCharts
-                chartData={this.chartData()}
-                labelData={this.renderLabels()}
-              />
-              <CategoryWiseData
-                renderItem={this.renderItem}
-                categoryData={categoryData}
-                transactionType={transactionType}
-              />
-            </View>
-            : <View style={{ justifyContent: 'center', alignItems: 'center', height, }}>
-              <EmptyDataWithButton
-                title="Data Empty"
-                buttonTitle="Add Transactions"
-                onPress={() => this.switchToTab()}
-              />
-            </View>
+        <TransactionTypeButton
+          onExpensePress={() => this.onClickType('Expense')}
+          onIncomePress={() => this.onClickType('Income')}
+          activeType={(value) => activeType(value)}
+        />
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View style={{ marginHorizontal: 15, }}>
 
-          }
-        </View>
+            {categoryData.length > 0 ?
+              <View>
+                <TransactionTypeCharts
+                  chartData={this.chartData()}
+                  labelData={this.renderLabels()}
+                />
+                <CategoryWiseData
+                  renderItem={this.renderItem}
+                  categoryData={categoryData}
+                  transactionType={transactionType}
+                />
+              </View>
+              : <View style={{ justifyContent: 'center', alignItems: 'center', height, }}>
+                <EmptyDataWithButton
+                  title="Data Empty"
+                  buttonTitle="Add Transactions"
+                  onPress={() => this.switchToTab()}
+                />
+              </View>
+
+            }
+          </View>
+
+        </ScrollView>
 
 
         <YearMonthModal
@@ -207,8 +212,8 @@ function TransactionTypeButton({
   activeType
 }) {
   return (
-    <View>
-      <View style={{ flexDirection: 'row', height: 35, paddingHorizontal: 20, }}>
+    <View style={styles.transactionTypeButtonView}>
+      <View style={styles.transactionTypeButtons}>
         <TouchableOpacity
           onPress={onExpensePress}
           style={[styles.transactiontypeView, activeType('Expense') ? styles.selectedTransactionTypeView : null]}
@@ -248,7 +253,7 @@ function TransactionTypeCharts({
             standalone={false}
             centerTitle
             labels={(d) => d.name}
-            style={{ title: { fontSize: 20 } }}
+            style={{ title: { fontSize: 14 } }}
             orientation="vertical"
             data={labelData}
             colorScale={colors}

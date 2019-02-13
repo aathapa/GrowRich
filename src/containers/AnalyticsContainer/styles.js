@@ -5,8 +5,6 @@ export default styles = {
     margin: moderateScale(15)
   },
   chartView: {
-    // height: verticalScale(180),
-    // flex: 1,
     flexDirection: 'row',
     backgroundColor: '#fff',
     borderWidth: 0.5,
@@ -17,15 +15,12 @@ export default styles = {
     marginTop: verticalScale(10)
   },
   categoryWiseListView: {
-    // flex: 2,
-    height: verticalScale(280),
     borderRadius: moderateScale(3),
     borderWidth: moderateScale(0.5),
     borderColor: '#ccc',
     backgroundColor: '#fff',
     marginTop: verticalScale(10),
-    padding: moderateScale(20),
-    // paddingBottom: ,
+    padding: moderateScale(15),
   },
   transactiontypeView: {
     flex: 4,
@@ -50,6 +45,28 @@ export default styles = {
   selectedTransactionTypeText: {
     color: '#fff',
     fontSize: moderateScale(17)
+  },
+  imageView: {
+    height: moderateScale(26),
+    width: moderateScale(26),
+    borderRadius: moderateScale(13),
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  image: {
+    height: moderateScale(15),
+    width: moderateScale(15)
+  },
+  listItemText: {
+    fontSize: moderateScale(12)
+  },
+  transactionTypeButtonView: {
+    marginTop: moderateScale(15),
+    height: moderateScale(40)
+  },
+  transactionTypeButtons: {
+    flexDirection: 'row',
+    height: moderateScale(35),
+    paddingHorizontal: moderateScale(20),
   }
-
 }
