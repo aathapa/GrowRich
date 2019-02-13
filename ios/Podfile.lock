@@ -10,6 +10,8 @@ PODS:
   - glog (0.3.5)
   - React (0.57.8):
     - React/Core (= 0.57.8)
+  - react-native-splash-screen (3.2.0):
+    - React
   - react-native-sqlite-storage (3.3.9):
     - React
   - React/Core (0.57.8):
@@ -47,9 +49,9 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
-  - ReactNativeNavigation (2.5.0):
+  - ReactNativeNavigation (2.8.0):
     - React
-  - RNSVG (9.0.2):
+  - RNSVG (9.2.4):
     - React
   - yoga (0.57.8.React)
 
@@ -58,6 +60,7 @@ DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
+  - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
   - react-native-sqlite-storage (from `../node_modules/react-native-sqlite-storage`)
   - React/Core (from `../node_modules/react-native`)
   - React/CxxBridge (from `../node_modules/react-native`)
@@ -86,6 +89,8 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
   React:
     :path: "../node_modules/react-native"
+  react-native-splash-screen:
+    :path: "../node_modules/react-native-splash-screen"
   react-native-sqlite-storage:
     :path: "../node_modules/react-native-sqlite-storage"
   ReactNativeNavigation:
@@ -102,11 +107,12 @@ SPEC CHECKSUMS:
   Folly: c89ac2d5c6ab169cd7397ef27485c44f35f742c7
   glog: e8acf0ebbf99759d3ff18c86c292a5898282dcde
   React: 1fe0eb13d90b625d94c3b117c274dcfd2e760e11
+  react-native-splash-screen: a49be22f0f6648b8416f3bd28258645eeaa5b42b
   react-native-sqlite-storage: 848fb96c0b6d17b3f70e169ac41f84434cdad94c
   ReactNativeNavigation: 20522060de61b1c293ec50681a6aa11488596286
   RNSVG: 4834be1d644eb77f0e3f6de851881b83758a3124
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: bc8a2273c0b5663082c75997046d92918d1b2950
+PODFILE CHECKSUM: 3295b76ca9dc0599bfaa9ac27e080f98e1d1ee34
 
 COCOAPODS: 1.5.3

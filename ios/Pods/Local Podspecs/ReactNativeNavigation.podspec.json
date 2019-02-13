@@ -1,6 +1,6 @@
 {
   "name": "ReactNativeNavigation",
-  "version": "2.5.0",
+  "version": "2.8.0",
   "summary": "React Native Navigation - truly native navigation for iOS and Android",
   "authors": "Wix.com",
   "homepage": "https://github.com/wix/react-native-navigation",
@@ -11,7 +11,7 @@
   "module_name": "ReactNativeNavigation",
   "source": {
     "git": "https://github.com/wix/react-native-navigation.git",
-    "tag": "2.5.0"
+    "tag": "2.8.0"
   },
   "source_files": "lib/ios/**/*.{h,m}",
   "exclude_files": [

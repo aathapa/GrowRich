@@ -32,8 +32,7 @@ target 'expense' do
   pod 'react-native-sqlite-storage', :path => '../node_modules/react-native-sqlite-storage'
   pod 'RNSVG', :path => '../node_modules/react-native-svg'
 
-
-
+  pod 'react-native-splash-screen', :path => '../node_modules/react-native-splash-screen'
 
   target 'expenseTests' do
     inherit! :search_paths
