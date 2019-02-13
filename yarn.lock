@@ -4828,6 +4828,11 @@ react-native-size-matters@^0.1.6:
   resolved "https://registry.yarnpkg.com/react-native-size-matters/-/react-native-size-matters-0.1.6.tgz#2d49390ab861e7a9335d8d92b80d7f75349ff8a0"
   integrity sha512-XE6foUS1GGC5XLFAL643vpupoR/lHKRePoV4Meh27fhAKxWxPJdJdgdFcMBK50idWrAxv8ZfBtPhtTSv+IKAcg==
 
+react-native-splash-screen@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-splash-screen/-/react-native-splash-screen-3.2.0.tgz#d47ec8557b1ba988ee3ea98d01463081b60fff45"
+  integrity sha512-Ls9qiNZzW/OLFoI25wfjjAcrf2DZ975hn2vr6U9gyuxi2nooVbzQeFoQS5vQcbCt9QX5NY8ASEEAtlLdIa6KVg==
+
 react-native-sqlite-storage@^3.3.9:
   version "3.3.9"
   resolved "https://registry.yarnpkg.com/react-native-sqlite-storage/-/react-native-sqlite-storage-3.3.9.tgz#a4bf60628826c509fb24ad2f4319c1e496640cc1"

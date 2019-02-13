@@ -17,6 +17,7 @@
     "react-native-modal-datetime-picker": "^6.0.0",
     "react-native-navigation": "2.8.0",
     "react-native-size-matters": "^0.1.6",
+    "react-native-splash-screen": "^3.2.0",
     "react-native-sqlite-storage": "^3.3.9",
     "react-native-svg": "^9.0.2",
     "react-native-vector-icons": "^6.1.0",
