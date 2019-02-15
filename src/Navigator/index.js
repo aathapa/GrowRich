@@ -1,5 +1,8 @@
 import React from 'react'
 import { Navigation } from 'react-native-navigation'
+import { Provider } from 'react-redux'
+
+import { store } from '../redux/store'
 import {
   SplashContainer,
   HomeContainer,
@@ -23,7 +26,10 @@ import hoistNonReactStatic from 'hoist-non-react-statics'
 function reactNativeNavigationHOC(WrappedComponent) {
   function HOC({ ...props }) {
     return (
-      <WrappedComponent {...props} />
+      <Provider store={store}>
+        <WrappedComponent {...props} />
+      </Provider>
+      
     )
   }
   hoistNonReactStatic(HOC, WrappedComponent)
