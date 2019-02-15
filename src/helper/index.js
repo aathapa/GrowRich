@@ -1,4 +1,4 @@
-export { categories, month } from './data'
+export { categories, month, currency } from './data'
 
 export {
   randomColor,
@@ -7,4 +7,4 @@ export {
   lastMonthDay,
   lastMonthDate,
   getCurrentFullMonthName
-} from './util'
+} from './date'

@@ -169,3 +169,41 @@ export const month = [
     num: '12'
   },
 ]
+
+export const currency = [
+  {
+    name: 'Afghan Afghani',
+    symbol: '؋'
+  },
+  {
+    name: 'Australia Dollar',
+    symbol: '$'
+  },
+  {
+    name: 'Canada Dollar',
+    symbol: '$'
+  },
+  {
+    name: 'India Rupee',
+    symbol: '₹'
+  },
+  {
+    name: 'Iran Rial',
+    symbol: '﷼'
+  }, {
+    name: 'Japan Yen',
+    symbol: '¥'
+  },
+  {
+    name: 'Nepal Rupee',
+    symbol: 'रू'
+  },
+  {
+    name: 'United Kingdom',
+    symbol: '£'
+  },
+  {
+    name: 'United States',
+    symbol: '$'
+  },
+]
