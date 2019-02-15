@@ -66,6 +66,12 @@ class AddTransactionContainer extends Component {
 
   async insertData() {
     const { amount, memo, currentDate, currentActiveMenu, selectedCategoryItem } = this.state
+
+    if (amount.length === 0) {
+      alert('Enter amount')
+      return
+    }
+    
     const vars = [uuid(), currentActiveMenu, selectedCategoryItem, currentDate, amount, memo, colors[Math.floor(Math.random() * colors.length)], Date.now()]
     try {
       await insertDataInTransaction(db, vars)
