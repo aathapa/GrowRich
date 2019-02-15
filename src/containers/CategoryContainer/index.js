@@ -253,9 +253,9 @@ function CategoryHeader({
           <View style={{ flex: 1 }}>
             <Text style={{ color: '#fff', fontSize: 25, fontWeight: '600' }}>Categories</Text>
           </View>
-          <TouchableOpacity style={{ flex: 1, alignItems: 'flex-end' }}>
+          {/* <TouchableOpacity style={{ flex: 1, alignItems: 'flex-end' }}>
             <Feather name="plus-circle" color="#fff" size={25} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
         <View style={{ flexDirection: 'row', backgroundColor: '#fff', height: 40, borderRadius: 20 }}>
           <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
