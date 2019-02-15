@@ -88,6 +88,10 @@ export function goToAuth() {
               component: {
                 name: SETTING_CONTAINER,
                 options: {
+                  topBar: {
+                    visible: false,
+                    drawBehind: true
+                  },
                   bottomTab: {
                     text: 'Setting',
                     icon: setting
