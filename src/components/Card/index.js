@@ -18,7 +18,8 @@ export function Card({
   memo,
   onPress,
   color,
-  image
+  image,
+  currencySymbol
 }) {
   const textColor = type.toUpperCase() === 'EXPENSE' ? Colors.expenseColor : Colors.incomeColor
   const symbol = type.toUpperCase() === 'EXPENSE' ? '-' : '+'
@@ -39,7 +40,7 @@ export function Card({
           <Text style={{ color: Colors.dateColorOnWhitebackground, marginTop: 5 }}>{date}</Text>
         </View>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={[styles.cardFont, { color: textColor }]}>{symbol}{amount}</Text>
+          <Text style={[styles.cardFont, { color: textColor }]}>{symbol}{currencySymbol}{amount}</Text>
         </View>
       </View>
     </TouchableOpacity>

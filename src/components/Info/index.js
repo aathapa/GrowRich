@@ -7,7 +7,8 @@ export function Info({
   type,
   typeAmount,
   iconColor,
-  opacity
+  opacity,
+  currencySymbol
 }) {
   return (
     <Animated.View style={{ flex: 1, opacity }}>
@@ -19,10 +20,9 @@ export function Info({
         </View>
         <View style={{ flex: 4 }}>
           <Animated.Text style={{ color: '#fff' }}>{type}</Animated.Text>
-          <Animated.Text style={{ color: '#fff', fontWeight: '600', fontSize: 20 }}>{typeAmount}</Animated.Text>
+          <Animated.Text style={{ color: '#fff', fontWeight: '600', fontSize: 20 }}>{currencySymbol}{typeAmount}</Animated.Text>
         </View>
       </View>
-
     </Animated.View>
   )
 }
