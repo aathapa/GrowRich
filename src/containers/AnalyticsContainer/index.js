@@ -6,15 +6,17 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
-  ScrollView
+  ScrollView,
+  AsyncStorage
 } from 'react-native'
 import { sumBy } from 'lodash'
 import { VictoryPie, VictoryLegend } from 'victory-native'
 import { Navigation } from 'react-native-navigation'
 import { openDatabase } from 'react-native-sqlite-storage'
 import Svg from 'react-native-svg'
-import IonIcons from 'react-native-vector-icons/Ionicons'
+import { connect } from 'react-redux'
 
+import { getCurrency } from '../../redux/actions'
 import { fetchGroupByData } from '../../database'
 
 import { TopBar, EmptyDataWithButton, YearMonthModal } from 'component'
@@ -45,6 +47,7 @@ class AnalyticsContainer extends Component {
 
   componentDidAppear() {
     this.fetchData()
+    this.props.getCurrency('currency')
   }
 
   async fetchData() {
@@ -104,7 +107,6 @@ class AnalyticsContainer extends Component {
   }
 
   renderItem = ({ x, y, c }) => {
-
     return (
       <View style={{ flexDirection: 'row', paddingTop: 15 }}>
         <View style={{ flex: 1, }}>
@@ -121,12 +123,11 @@ class AnalyticsContainer extends Component {
             <Text style={styles.listItemText}>{x}</Text>
           </View>
           <View style={{ flex: 1, alignItems: 'flex-end' }}>
-            <Text style={styles.listItemText}>{y}</Text>
+            <Text style={styles.listItemText}>{this.props.currencySymbol}{y}</Text>
           </View>
         </View>
 
       </View>
-
     )
   }
 
@@ -142,6 +143,7 @@ class AnalyticsContainer extends Component {
     const { categoryData, selectedMonth, isDateModalVisible, currentYear, transactionType } = this.state
     const isMonthActive = (value) => selectedMonth === value
     const activeType = (value) => transactionType === value
+
     return (
       <View style={{ backgroundColor: '#EEEEEE', flex: 1 }}>
         <TopBar
@@ -306,4 +308,4 @@ function CategoryWiseData({
   )
 }
 
-export default AnalyticsContainer   
+export default connect(state => ({ currencySymbol: state.currency.activeSymbol }), { getCurrency })(AnalyticsContainer)   

@@ -14,9 +14,10 @@ import { openDatabase } from 'react-native-sqlite-storage'
 import IonIcons from 'react-native-vector-icons/Ionicons'
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import Modal from 'react-native-modal';
-
+import { connect } from 'react-redux'
+ 
+import { getCurrency } from '../../redux/actions'
 import { Info, Card, EmptyDataWithButton, YearMonthModal } from 'component'
-
 import { Images, Icons } from 'globalData'
 import { month, firstMonthDay, lastMonthDay, lastMonthDate, getCurrentFullMonthName } from 'helper'
 import { fetchAllTransaction, deleteTransactionItem } from '../../database/transactions.model'
@@ -52,6 +53,7 @@ class HomeContainer extends Component {
 
   componentDidAppear() {
     this.fetchData()
+    this.props.getCurrency('currency')
   }
 
   async fetchData() {
@@ -141,6 +143,7 @@ class HomeContainer extends Component {
           totalBalance={totalBalance}
           selectedFullMonth={selectedFullMonth}
           currentYear={currentYear}
+          currencySymbol={this.props.currencySymbol}
         />
         {transactionData.length > 0 ?
           <View>
@@ -154,6 +157,7 @@ class HomeContainer extends Component {
                     isTransactionItemModalVisible: true,
                     selectedTransactionData: item
                   })}
+                currencySymbol={this.props.currencySymbol}
               />
             </View>
 
@@ -211,7 +215,8 @@ function TransactionTotalValue({
   totalIncome,
   totalBalance,
   selectedFullMonth,
-  currentYear
+  currentYear,
+  currencySymbol
 }) {
   return (
     <LineargradientAnimation style={[styles.homeContainerHeaderView, { transform: [{ translateY }], }]}
@@ -222,7 +227,8 @@ function TransactionTotalValue({
         </View>
         <Animated.View style={{ transform: [{ translateY: balanceTextMargin }] }}>
 
-          <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+          <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
+            {/* <Text style={{fontSize: 20, color: '#fff'}}>{currencySymbol}</Text> */}
             <Text style={styles.homeContainerHeaderCurrentBalanceText}>{totalBalance}</Text>
           </View>
         </Animated.View>
@@ -239,6 +245,7 @@ function TransactionTotalValue({
             typeAmount={totalIncome}
             iconColor="green"
             opacity={textOpacity}
+            currencySymbol={currencySymbol}
           />
         </View>
         <View style={{ flex: 1 }} />
@@ -249,6 +256,7 @@ function TransactionTotalValue({
             typeAmount={totalExpense}
             iconColor="red"
             opacity={textOpacity}
+            currencySymbol={currencySymbol}
 
           />
         </View>
@@ -268,7 +276,8 @@ function TransactionTotalValue({
 function TransactionList({
   transactionData,
   scrollY,
-  onPress
+  onPress,
+  currencySymbol
 }) {
   return (
     <AnimatedFlatList
@@ -285,6 +294,7 @@ function TransactionList({
         color={item.color}
         image={Images}
         onPress={() => onPress(item)}
+        currencySymbol={currencySymbol}
       />
       }
       keyExtractor={(item) => item.id}
@@ -402,4 +412,4 @@ function TransactionDetailContent({
   )
 }
 
-export default HomeContainer
+export default connect(state => ({ currencySymbol: state.currency.activeSymbol }), { getCurrency })(HomeContainer)
