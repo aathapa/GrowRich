@@ -1,11 +1,12 @@
 {
-  "name": "expense",
+  "name": "MoneySaver",
   "version": "0.0.1",
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest",
-    "androidRelease": "cd ./android && ./gradlew app:assembleRelease"
+    "androidRelease": "cd ./android && ./gradlew app:assembleRelease",
+    "android": "cd ./android && ./gradlew app:assembleDebug && ./gradlew installDebug"
   },
   "dependencies": {
     "react": "16.6.3",

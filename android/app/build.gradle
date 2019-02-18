@@ -86,7 +86,7 @@ apply from: "../../node_modules/react-native/react.gradle"
  * Upload all the APKs to the Play Store and people will download
  * the correct one based on the CPU architecture of their device.
  */
-def enableSeparateBuildPerCPUArchitecture = false
+def enableSeparateBuildPerCPUArchitecture = true
 
 /**
  * Run Proguard to shrink the Java bytecode in release builds.
@@ -106,22 +106,19 @@ def getPassword(String currentUser, String keyChain) {
       stdout.toString().trim()
 }
 
-def pass = getPassword("aayushthapa","android_keystore")
+def pass = getPassword("aayushthapa","expense_keychain")
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
-        applicationId "com.expense"
+        applicationId "com.moneytrackersaver"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         missingDimensionStrategy "RNN.reactNativeVersion", "reactNative57_5"
-        versionCode 1
-        versionName "1.0"
-        ndk {
-            abiFilters "armeabi-v7a", "x86"
-        }
+        versionCode 2
+        versionName "1.1"
     }
     signingConfigs {
         release {
