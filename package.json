@@ -6,7 +6,9 @@
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest",
     "androidRelease": "cd ./android && ./gradlew app:assembleRelease",
-    "android": "cd ./android && ./gradlew app:assembleDebug && ./gradlew installDebug"
+    "android": "cd ./android && ./gradlew app:assembleDebug && ./gradlew installDebug",
+    "pod": "cd ./ios && pod update",
+    "ios": "open ./ios/expense.xcworkspace"
   },
   "dependencies": {
     "react": "16.6.3",
@@ -16,7 +18,7 @@
     "react-native-linear-gradient": "^2.5.3",
     "react-native-modal": "^7.0.2",
     "react-native-modal-datetime-picker": "^6.0.0",
-    "react-native-navigation": "2.8.0",
+    "react-native-navigation": "2.12.0",
     "react-native-size-matters": "^0.1.6",
     "react-native-splash-screen": "^3.2.0",
     "react-native-sqlite-storage": "^3.3.9",
