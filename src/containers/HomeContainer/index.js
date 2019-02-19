@@ -16,7 +16,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign'
 import Modal from 'react-native-modal';
 import { connect } from 'react-redux'
  
-import { getCurrency } from '../../redux/actions'
+import { getCurrency, editTransaction } from '../../redux/actions'
 import { Info, Card, EmptyDataWithButton, YearMonthModal } from 'component'
 import { Images, Icons } from 'globalData'
 import { month, firstMonthDay, lastMonthDay, lastMonthDate, getCurrentFullMonthName } from 'helper'
@@ -187,6 +187,7 @@ class HomeContainer extends Component {
           onBackdropPress={() => this.setState({ isTransactionItemModalVisible: false })}
           data={selectedTransactionData}
           onDeletePressed={() => this.onDeletePressed()}
+          onEditPressed={(data) => this.props.editTransaction({...data, from: 'edit'})}
         />
         <TouchableOpacity
           style={styles.filterView}
@@ -355,7 +356,7 @@ function TransactionDetailModalView({
           </View>
           <View style={{ flex: 2, flexDirection: 'row', justifyContent: 'space-around', }}>
             <TouchableOpacity
-              onPress={onEditPressed}
+              onPress={()=> onEditPressed(data)}
             >
               <AntDesign name="edit" size={20} color="#212121" />
             </TouchableOpacity>
@@ -412,4 +413,4 @@ function TransactionDetailContent({
   )
 }
 
-export default connect(state => ({ currencySymbol: state.currency.activeSymbol }), { getCurrency })(HomeContainer)
+export default connect(state => ({ currencySymbol: state.currency.activeSymbol }), { getCurrency, editTransaction })(HomeContainer)

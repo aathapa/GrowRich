@@ -14,6 +14,7 @@ import { openDatabase } from 'react-native-sqlite-storage'
 import uuid from 'uuid/v4'
 import Modal from 'react-native-modal'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { connect } from 'react-redux'
 
 import { CategoryListing, Form, TopBar } from 'component'
 
@@ -44,6 +45,7 @@ class AddTransactionContainer extends Component {
   }
 
   categoryHeightValue = new Animated.Value(0)
+  toastAnimationValue = new Animated.Value(0)
 
   componentDidMount() {
     Navigation.events().bindComponent(this)
@@ -52,6 +54,7 @@ class AddTransactionContainer extends Component {
   componentDidAppear() {
     const { currentActiveMenu } = this.state
     this.fetchData(type = currentActiveMenu)
+
   }
 
   async fetchData(type) {
@@ -71,7 +74,7 @@ class AddTransactionContainer extends Component {
       alert('Enter amount')
       return
     }
-    
+
     const vars = [uuid(), currentActiveMenu, selectedCategoryItem, currentDate, amount, memo, colors[Math.floor(Math.random() * colors.length)], Date.now()]
     try {
       await insertDataInTransaction(db, vars)
@@ -86,7 +89,7 @@ class AddTransactionContainer extends Component {
     this.setState(prevstate => ({
       open: !prevstate.open
     }))
-
+  
   }
 
   onClickMenu(type) {
@@ -114,6 +117,8 @@ class AddTransactionContainer extends Component {
       outputRange: [height, 0]
     })
 
+    console.log(this.props.data)
+
     return (
       <View style={{ height }}>
         <TopBar
@@ -121,6 +126,7 @@ class AddTransactionContainer extends Component {
           iconName={Icons.IonIcons.filter}
           title={this.state.currentActiveMenu}
         />
+
         <Animated.View style={{ height: categoryHeight }}>
           <CategoryListing
             onPress={(item) => {
@@ -155,6 +161,11 @@ class AddTransactionContainer extends Component {
           }
           onCancel={() => this.setState({ isDateTimePickerVisible: false })}
         />
+        <Animated.View
+          style={{ height: 80, backgroundColor: '#000', position: 'absolute', top: 30, right: 20, left: 20, transform: [{ translateY: 400 }], opacity: 0 }}
+        >
+          <Text>Select New Category</Text>
+        </Animated.View>
       </View >
     )
   }
@@ -277,7 +288,7 @@ function CategoryModal({
     >
       <View style={styles.categoryModalview}>
         <TouchableOpacity
-          style={{ flex: 1,}}
+          style={{ flex: 1, }}
           onPress={onExpensePressed}
         >
           <Text style={{ color: '#fff', fontSize: 18 }}>Expense</Text>
@@ -295,4 +306,4 @@ function CategoryModal({
   )
 }
 
-export default AddTransactionContainer
+export default connect(state => ({ data: state.transaction.selectedItemData }))(AddTransactionContainer)
