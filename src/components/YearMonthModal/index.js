@@ -33,15 +33,15 @@ export function YearMonthModal({
         <View>
           <View>
             <View style={{ flexDirection: 'row' }}>
-              <TouchableOpacity style={{ flex: 1 }} onPress={onArrowBackPressed}>
+              <TouchableOpacity style={{ flex: 1 }} onPress={() => onArrowBackPressed('-')}>
                 <IonIcons name={Icons.IonIcons.arrowBack} size={20} color="#fff" />
               </TouchableOpacity>
               <View style={{ flex: 3, alignItems: 'center' }}>
-                <Text style={{color: '#fff'}}>{currentYear}</Text>
+                <Text style={{ color: '#fff' }}>{currentYear}</Text>
               </View>
               <TouchableOpacity
                 style={{ flex: 1, alignItems: 'flex-end' }}
-                onPress={onArrowForwardPressed}
+                onPress={() => onArrowForwardPressed('+')}
               >
                 <IonIcons name={Icons.IonIcons.arrowForward} size={20} color="#fff" />
               </TouchableOpacity>

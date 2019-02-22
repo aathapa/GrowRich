@@ -72,7 +72,7 @@ class HomeContainer extends Component {
     return data.filter(t => t.transaction_type === type).reduce((acc, ele) => (acc + ele.amount), 0)
   }
 
-  onMonthPressed(num, fullMonth) {
+  onMonthPressed = (num, fullMonth) => {
     this.setState({ selectedMonth: num, isDateModalVisible: false, selectedFullMonth: fullMonth }, () => {
       this.fetchData()
     })
@@ -94,7 +94,7 @@ class HomeContainer extends Component {
     })
   }
 
-  onArrowPressed(type) {
+  onArrowPressed = (type) => {
     this.setState(prevState => ({
       currentYear: type === '+' ? prevState.currentYear + 1 : prevState.currentYear - 1
     }))
@@ -185,10 +185,10 @@ class HomeContainer extends Component {
           data={month}
           onBackdropPress={() => this.setState({ isDateModalVisible: false })}
           currentYear={currentYear}
-          onArrowBackPressed={() => this.onArrowPressed('-')}
-          onArrowForwardPressed={() => this.onArrowPressed('+')}
-          onMonthPressed={(num, fullMonth) => this.onMonthPressed(num, fullMonth)}
-          isMonthActive={(num) => isMonthActive(num)}
+          onArrowBackPressed={this.onArrowPressed}
+          onArrowForwardPressed={this.onArrowPressed}
+          onMonthPressed={this.onMonthPressed}
+          isMonthActive={isMonthActive}
         />
 
         <TransactionDetailModalView
