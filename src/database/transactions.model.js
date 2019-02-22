@@ -1,4 +1,4 @@
-import { exec, select, insert, remove } from './db';
+import { exec, select, insert, remove, update } from './db';
 
 export function createTransactionTable(db) {
   return exec(db, `
@@ -18,7 +18,7 @@ export function fetchAllTransaction(db, vars = []) {
   return select(db, `
    SELECT * FROM Transactions
    WHERE transaction_date BETWEEN ? AND ?
-   ORDER BY position DESC 
+   ORDER BY transaction_date DESC 
   `, vars
   );
 }
@@ -83,3 +83,4 @@ export function deleteTransactionItem(db, vars) {
     vars
   )
 }
+
