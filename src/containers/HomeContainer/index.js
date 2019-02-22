@@ -15,7 +15,7 @@ import IonIcons from 'react-native-vector-icons/Ionicons'
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import Modal from 'react-native-modal';
 import { connect } from 'react-redux'
- 
+
 import { getCurrency, editTransaction } from '../../redux/actions'
 import { Info, Card, EmptyDataWithButton, YearMonthModal } from 'component'
 import { Images, Icons } from 'globalData'
@@ -78,11 +78,20 @@ class HomeContainer extends Component {
     })
   }
 
-  onDeletePressed() {
+  onDeletePressed = () => {
     const { id } = this.state.selectedTransactionData
     deleteTransactionItem(db, vars = [id])
     this.fetchData()
     this.setState({ isTransactionItemModalVisible: false })
+  }
+
+  onEditPressed = (data) => {
+    this.props.editTransaction(data)
+    this.setState({ isTransactionItemModalVisible: false }, () => {
+      setTimeout(() => {
+        this.switchToTab(2)
+      }, 100);
+    })
   }
 
   onArrowPressed(type) {
@@ -91,10 +100,10 @@ class HomeContainer extends Component {
     }))
   }
 
-  switchToTab() {
+  switchToTab(tabIndex) {
     Navigation.mergeOptions(this.props.componentId, {
       bottomTabs: {
-        currentTabIndex: 2
+        currentTabIndex: tabIndex
       }
     })
   }
@@ -166,7 +175,7 @@ class HomeContainer extends Component {
             <EmptyDataWithButton
               title="Transaction Empty"
               buttonTitle="Start tracking your money"
-              onPress={() => this.switchToTab()}
+              onPress={this.switchToTab.bind(this, 2)}
             />
           </View>
         }
@@ -186,8 +195,8 @@ class HomeContainer extends Component {
           isVisible={isTransactionItemModalVisible}
           onBackdropPress={() => this.setState({ isTransactionItemModalVisible: false })}
           data={selectedTransactionData}
-          onDeletePressed={() => this.onDeletePressed()}
-          onEditPressed={(data) => this.props.editTransaction({...data, from: 'edit'})}
+          onDeletePressed={this.onDeletePressed}
+          onEditPressed={this.onEditPressed}
         />
         <TouchableOpacity
           style={styles.filterView}
@@ -356,7 +365,7 @@ function TransactionDetailModalView({
           </View>
           <View style={{ flex: 2, flexDirection: 'row', justifyContent: 'space-around', }}>
             <TouchableOpacity
-              onPress={()=> onEditPressed(data)}
+              onPress={() => onEditPressed(data)}
             >
               <AntDesign name="edit" size={20} color="#212121" />
             </TouchableOpacity>
