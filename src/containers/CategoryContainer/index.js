@@ -95,7 +95,7 @@ class CategoryContainer extends Component {
     })
   }
 
-  onCategoryItemClick(name, id) {
+  onCategoryItemClick(name) {
     this.animateValue()
     this.setState({ selectedCategory: name }, () => {
       this.fetchCategoryData()
