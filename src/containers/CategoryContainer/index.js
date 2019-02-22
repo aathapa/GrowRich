@@ -298,6 +298,7 @@ function CategoryChart({
     >
       <TopBar
         title={selectedCategory}
+        renderBackButton={true}
         backPress={animateValue}
       />
 

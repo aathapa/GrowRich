@@ -14,7 +14,8 @@ export function TopBar({
   onPress,
   iconName,
   title,
-  backPress
+  backPress,
+  renderBackButton
 }) {
   return (
     <LinearGradient
@@ -25,7 +26,7 @@ export function TopBar({
     >
       <View style={{ flexDirection: 'row' }}>
         <View style={{ flex: 1, alignItems: 'center', }}>
-          {backPress && <TouchableOpacity onPress={backPress}>
+          {renderBackButton && <TouchableOpacity onPress={backPress}>
             <IonIcons name={Icons.IonIcons.back} color="#fff" size={Platform.OS === 'ios' ? 40 : 30} />
           </TouchableOpacity>}
         </View>
