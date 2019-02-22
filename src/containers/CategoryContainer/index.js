@@ -22,7 +22,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { Images } from 'globalData'
 import { fetchAllCategory, fetchEachCategoryData } from '../../database/'
 import { randomColor } from 'helper'
-import { EmptyDataWithButton } from 'component'
+import { EmptyDataWithButton, TopBar } from 'component'
 
 const db = openDatabase({ name: 'Expense.db' })
 
@@ -62,7 +62,7 @@ class CategoryContainer extends Component {
 
   componentDidDisappear() {
     this.animationValue.setValue(0)
-    this.setState({open: false, categoryFormText: ''})
+    this.setState({ open: false, categoryFormText: '' })
     this.backHandler.remove()
 
   }
@@ -151,7 +151,7 @@ class CategoryContainer extends Component {
   }
 
   render() {
-    const { eachCategoryData, categoryData, categoryFormText } = this.state
+    const { eachCategoryData, categoryData, categoryFormText, selectedCategory } = this.state
 
     const translateX = this.animationValue.interpolate({
       inputRange: [0, 1],
@@ -170,6 +170,7 @@ class CategoryContainer extends Component {
           eachCategoryData={eachCategoryData}
           switchToTab={() => this.switchToTab()}
           animateValue={this.animateValue}
+          selectedCategory={selectedCategory}
         />
         <Animated.View style={{ transform: [{ translateX }] }}>
           <CategoryHeader
@@ -205,7 +206,7 @@ function CategoryList({
     <KeyboardAwareScrollView
     >
       {categoryData.length > 0 ?
-        <View style={{ backgroundColor: '#FFFFFF', height: 470 }}>
+        <View style={{ backgroundColor: '#FFFFFF', height: 450 }}>
           <FlatList
             data={categoryData}
             renderItem={({ item }) => renderItems(item)}
@@ -214,7 +215,7 @@ function CategoryList({
 
         </View>
         // 
-        : <View style={{ height: height - 150, justifyContent: 'center', alignItems: 'center' }}>
+        : <View style={{ height }}>
           {categoryFormText.length > 0 ?
             <EmptyDataWithButton
               title="Category Not Found"
@@ -288,23 +289,21 @@ function CategoryChart({
   opacity,
   eachCategoryData,
   switchToTab,
-  animateValue
+  animateValue,
+  selectedCategory
 }) {
   return (
     <Animated.View
-      style={{ position: 'absolute', top: 0, left: 0, right: 0, opacity, paddingHorizontal: 15, }}
+      style={{ position: 'absolute', top: 0, left: 0, right: 0, opacity }}
     >
-      <View style={{ height: 80, justifyContent: 'center' }}>
-        <TouchableOpacity
-          onPress={animateValue}
-        >
-          <Feather name="arrow-left" size={30} color="#757575" />
-        </TouchableOpacity>
-      </View>
+      <TopBar
+        title={selectedCategory}
+        backPress={animateValue}
+      />
 
       {
         eachCategoryData.length > 0 ?
-          <View style={{}}>
+          <View style={{ paddingHorizontal: 15 }}>
             <VictoryChart minDomain={{ y: 0 }}>
               <VictoryAxis dependentAxis />
               <VictoryLine
