@@ -5,7 +5,8 @@ export {
   fetchGroupByData,
   deleteTransactionItem,
   fetchEachCategoryData,
-  totalIncomeExpenseAmount
+  totalIncomeExpenseAmount,
+  updateTransactionData
 } from './transactions.model'
 
 export {

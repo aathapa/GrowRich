@@ -35,4 +35,7 @@ export function remove(db, sql, vars) {
   return exec(db, sql, vars)
 }
 
+export function update(db, sql, vars) {
+  return exec(db, sql, vars)
+}
 

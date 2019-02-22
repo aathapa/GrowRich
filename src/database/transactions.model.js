@@ -84,3 +84,11 @@ export function deleteTransactionItem(db, vars) {
   )
 }
 
+export function updateTransactionData(db, vars) {
+  update(db, `
+    UPDATE Transactions 
+      SET transaction_type=?, category=?,transaction_date=?,amount=?,memo=? 
+      WHERE id=?
+  `,
+    vars)
+}
