@@ -18,7 +18,7 @@ export default styles = {
   },
   filterView: {
     position: 'absolute',
-    bottom: moderateScale(100, 1),
+    bottom: moderateScale(130, 0.1),
     right: scale(20),
     height: moderateScale(50),
     width: moderateScale(50),
