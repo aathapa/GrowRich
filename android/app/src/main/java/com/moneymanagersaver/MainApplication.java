@@ -1,4 +1,4 @@
-package com.moneytrackersaver;
+package com.moneymanagersaver;
 
 import android.app.Application;
 

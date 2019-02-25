@@ -1,4 +1,4 @@
-package com.moneytrackersaver;
+package com.moneymanagersaver;
 
 import android.os.Bundle; 
 import org.devio.rn.splashscreen.SplashScreen;
