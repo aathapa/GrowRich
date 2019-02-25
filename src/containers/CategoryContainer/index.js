@@ -23,6 +23,7 @@ import { Images } from 'globalData'
 import { fetchAllCategory, fetchEachCategoryData } from '../../database/'
 import { randomColor } from 'helper'
 import { EmptyDataWithButton, TopBar } from 'component'
+import styles from './style'
 
 const db = openDatabase({ name: 'Expense.db' })
 
@@ -206,7 +207,7 @@ function CategoryList({
     <KeyboardAwareScrollView
     >
       {categoryData.length > 0 ?
-        <View style={{ backgroundColor: '#FFFFFF', height: 450 }}>
+        <View style={styles.categoryListView}>
           <FlatList
             data={categoryData}
             renderItem={({ item }) => renderItems(item)}
@@ -243,7 +244,7 @@ function CategoryHeader({
 }) {
   return (
     <LinearGradient
-      style={{ height: 150, justifyContent: 'center', }}
+      style={styles.categoryHeaderView}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 0 }}
       colors={['#8B4FCB', '#5B3BB4']}
