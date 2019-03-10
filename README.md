@@ -1,7 +1,15 @@
 # GrowRich
 Expense tracker app developed with react native 
-## Install App from goolge play 
 
+## Framework used
+* React Native
+* Sqlite(database)
+* Redux(State Management)
+* Victory Native(Data Visualization)
+
+
+## Install App from goolge play 
+[<img src="https://drive.google.com/uc?id=1woV9LjuiZzI6SJJgIPxBqjA6EZg5-tpx" width="300">](https://play.google.com/store/apps/details?id=com.moneymanagersaver)
 
 ## Screenshots
 <img src="screenshots/1.png" height="500" width="280"> <img src="screenshots/2.png" height="500" width="280"> <img src="screenshots/3.png" height="500" width="280">
