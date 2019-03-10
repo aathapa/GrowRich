@@ -5,8 +5,9 @@ Expense tracker app developed with react native
 * React Native
 * Sqlite(database)
 * Redux(State Management)
+* wix React Native Navigation (Navigation)
 * Victory Native(Data Visualization)
-
+* react-native-splash-screen (to generate native splash screen)
 
 ## Install App from goolge play 
 [<img src="https://drive.google.com/uc?id=1woV9LjuiZzI6SJJgIPxBqjA6EZg5-tpx" width="300">](https://play.google.com/store/apps/details?id=com.moneymanagersaver)
